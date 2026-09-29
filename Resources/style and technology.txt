@@ -1,0 +1,911 @@
+Reference Website: https://uddoktapay.com/
+
+/* Created by Peek from uddoktapay.com */
+/* Version: 0.8.10.1 */
+/* Created at: 9/29/2026, 4:27:55 PM */
+/* Learn more: https://trypeek.app */
+
+:root {
+  /* 71 Colors */
+  --color-white: #fffffa;
+  --color-white-1: #ffffff;
+  --color-white-smoke: #e2f4e6;
+  --color-white-smoke-1: #ffdffb;
+  --color-white-smoke-2: #eef1ef;
+  --color-white-smoke-3: #eff4f9;
+  --color-white-smoke-4: #f4f4f4;
+  --color-white-smoke-5: #fff2f7;
+  --color-gainsboro: #dedede;
+  --color-gainsboro-1: #e2e8e4;
+  --color-lavender: #e2e8f0;
+  --color-lavender-1: #e5e9f3;
+  --color-lavender-2: #dfe4ff;
+  --color-lavender-3: #dff4ff;
+  --color-ghost-white: #f5f7fd;
+  --color-alice-blue: #eef2ff;
+  --color-alice-blue-1: #f3f5fe;
+  --color-floral-white: #fff7ed;
+  --color-azure: #eafff7;
+  --color-light-gray: #d0d0d0;
+  --color-wheat: #f8d6ab;
+  --color-silver: #bebebe;
+  --color-dark-gray: #0a2029;
+  --color-dark-gray-1: #18181a;
+  --color-dark-gray-2: #333333;
+  --color-dark-gray-3: #9aa0a6;
+  --color-dark-gray-4: #9ca3af;
+  --color-turquoise: #42f7bc;
+  --color-tomato: #ff4141;
+  --color-cornflower-blue: #5c79ff;
+  --color-medium-purple: #7763ff;
+  --color-gray: #848484;
+  --color-light-slate-gray: #7d8693;
+  --color-light-slate-gray-1: #949494;
+  --color-light-slate-gray-2: #8b93a4;
+  --color-royal-blue: #006cfa;
+  --color-royal-blue-1: #017cfa;
+  --color-royal-blue-2: #2e62e5;
+  --color-royal-blue-3: #2b5df6;
+  --color-royal-blue-4: #275eff;
+  --color-royal-blue-5: #363ff9;
+  --color-dark-turquoise: #009dfa;
+  --color-dark-turquoise-1: #00a1ff;
+  --color-dark-turquoise-2: #00d9ff;
+  --color-deep-pink: #ff1c7b;
+  --color-dim-gray: #5c6a64;
+  --color-dim-gray-1: #636363;
+  --color-dim-gray-2: #686868;
+  --color-dim-gray-3: #626574;
+  --color-dim-gray-4: #6d6d6d;
+  --color-dim-gray-5: #6b716a;
+  --color-slate-gray: #64748b;
+  --color-charcoal: #4d4d4d;
+  --color-charcoal-1: #525252;
+  --color-charcoal-2: #515151;
+  --color-teal: #059a62;
+  --color-teal-1: #207c6d;
+  --color-dark-violet: #8e00c7;
+  --color-dark-slate-gray: #374151;
+  --color-dark-red: #550000;
+  --color-dark-red-1: #660000;
+  --color-dark-red-2: #770000;
+  --color-black: #010101;
+  --color-black-1: #000000;
+  --color-black-2: #020617;
+  --color-black-3: #111111;
+  --color-black-4: #121916;
+  --color-black-5: #171717;
+  --color-black-6: #161616;
+  --color-black-7: #141e12;
+  --color-black-8: #330000;
+
+  /* 12 Gradients */
+  --gradient-linear: linear-gradient(to right, #009dfa, #006cfa);
+  --gradient-linear-1: linear-gradient(#009dfa 0%, #006cfa 123%);
+  --gradient-linear-2: linear-gradient(#000000, #f2faff 0%, #a1dcff 100%);
+  --gradient-linear-3: linear-gradient(#000000, #000000);
+  --gradient-linear-4: linear-gradient(#000000, #414670 0%, #333756 100%);
+  --gradient-linear-5: linear-gradient(#000000, #000000);
+  --gradient-linear-6: linear-gradient(#000000, #151c37 74.51%);
+  --gradient-linear-7: linear-gradient(to right in oklab, #f5f7fd 0%, #000000 100%);
+  --gradient-linear-8: linear-gradient(to left in oklab, #f5f7fd 0%, #000000 100%);
+  --gradient-linear-9: linear-gradient(90deg, #ffffff 0%, #ffffff 88%, #ffffff 100%);
+  --gradient-linear-10: linear-gradient(#000000, #ffffff 0%, #f4f4fd 100%);
+  --gradient-linear-11: linear-gradient(100deg, #24557d 0%, #24557d 20%, #009dfa 36%, #b6e4ff 45%, #009dfa 54%, #24557d 70%, #24557d 100%);
+}
+
+
+
+/* Created by Peek from uddoktapay.com */
+/* Version: 0.8.10.1 */
+/* Created at: 9/29/2026, 4:28:14 PM */
+/* Learn more: https://trypeek.app */
+
+/* 106 identified type styles */
+/* Typography – Raw tokens (Layer 2) */
+:root {
+  --font-plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-plus-jakarta-sans-plus-jakarta-sans-fallback-ui-sans-serif: 'Plus Jakarta Sans, Plus Jakarta Sans Fallback, ui-sans-serif', serif;
+  --font-noto-sans-bengali: 'Noto Sans Bengali', sans-serif;
+  --font-inter-inter-fallback-ui-sans-serif: 'Inter, Inter Fallback, ui-sans-serif', serif;
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
+  --font-geist: Geist, sans-serif;
+  --font-inter: Inter, sans-serif;
+  --font-geist-geist-fallback-ui-sans-serif: 'Geist, Geist Fallback, ui-sans-serif', serif;
+  --font-space-grotesk-space-grotesk-fallback: 'Space Grotesk, Space Grotesk Fallback', sans-serif;
+  --font-instrument-sans: 'Instrument Sans', sans-serif;
+  --font-geist-mono: 'Geist Mono', sans-serif;
+  --text-8: 8px;
+  --text-10: 10px;
+  --text-11: 11px;
+  --text-12: 12px;
+  --text-13: 13px;
+  --text-14: 14px;
+  --text-15: 15px;
+  --text-16: 16px;
+  --text-17: 17px;
+  --text-18: 18px;
+  --text-19: 19px;
+  --text-20: 20px;
+  --text-21: 21px;
+  --text-22: 22px;
+  --text-23: 23px;
+  --text-24: 24px;
+  --text-25: 25px;
+  --text-26: 26px;
+  --text-36: 36px;
+  --text-42: 42px;
+  --text-48: 48px;
+  --tracking-neg-1-2: -1.2px;
+  --tracking-neg-1-05: -1.05px;
+  --tracking-neg-1-8: -1.8px;
+  --tracking-neg-1-25: -1.25px;
+  --tracking-0-6: 0.6px;
+  --tracking-0-42: 0.42px;
+  --tracking-0-3: 0.3px;
+  --tracking-1: 1px;
+}
+
+/* Typography – Semantic type styles (Layer 1) */
+.type-h1 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-48);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: var(--tracking-neg-1-2);
+}
+
+.type-h2 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-42);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: var(--tracking-neg-1-05);
+}
+
+.type-large-title {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-42);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: var(--tracking-neg-1-05);
+}
+
+.type-h2-36 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-36);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: var(--tracking-neg-1-8);
+}
+
+.type-h2-36-600 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-36);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: var(--tracking-neg-1-8);
+}
+
+.type-h2-36-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-36);
+  font-weight: 500;
+  line-height: 1.47;
+  letter-spacing: var(--tracking-neg-1-8);
+}
+
+.type-h2-36-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-36);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: var(--tracking-neg-1-8);
+}
+
+.type-h2-36-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-36);
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: var(--tracking-neg-1-8);
+}
+
+.type-body {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-26);
+  font-weight: 600;
+  line-height: 1.27;
+}
+
+.type-heading {
+  font-family: var(--font-plus-jakarta-sans-plus-jakarta-sans-fallback-ui-sans-serif);
+  font-size: var(--text-25);
+  font-weight: 600;
+  line-height: 0.76;
+  letter-spacing: var(--tracking-neg-1-25);
+}
+
+.type-heading-25 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-25);
+  font-weight: 600;
+  line-height: 1.00;
+  letter-spacing: var(--tracking-neg-1-25);
+}
+
+.type-body-24 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-24);
+  font-weight: 600;
+  line-height: 1.17;
+  letter-spacing: var(--tracking-neg-1-2);
+}
+
+.type-subheading {
+  font-family: var(--font-noto-sans-bengali);
+  font-size: var(--text-23);
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: var(--tracking-neg-1-25);
+}
+
+.type-h3 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-22);
+  font-weight: 600;
+  line-height: 1.27;
+}
+
+.type-link {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-22);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-body-21 {
+  font-family: var(--font-inter-inter-fallback-ui-sans-serif);
+  font-size: var(--text-21);
+  font-weight: 500;
+  line-height: 1.19;
+}
+
+.type-subheading-21 {
+  font-family: var(--font-noto-sans-bengali);
+  font-size: var(--text-21);
+  font-weight: 500;
+  line-height: 1.19;
+}
+
+.type-h3-20 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-20);
+  font-weight: 500;
+  line-height: normal;
+}
+
+.type-body-20 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-20);
+  font-weight: 500;
+  line-height: 1.40;
+}
+
+.type-subheading-20 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-20);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-large-body {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-19);
+  font-weight: 500;
+  line-height: 1.26;
+}
+
+.type-body-18 {
+  font-family: var(--font-space-grotesk);
+  font-size: var(--text-18);
+  font-weight: 700;
+  line-height: 1.56;
+}
+
+.type-body-18-600 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-18);
+  font-weight: 600;
+  line-height: 1.11;
+}
+
+.type-large-body-18 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-18);
+  font-weight: 500;
+  line-height: 2.28;
+}
+
+.type-large-body-18-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-18);
+  font-weight: 500;
+  line-height: 1.56;
+}
+
+.type-body-18-400 {
+  font-family: var(--font-geist);
+  font-size: var(--text-18);
+  font-weight: 400;
+  line-height: 1.33;
+}
+
+.type-body-18-400 {
+  font-family: var(--font-geist);
+  font-size: var(--text-18);
+  font-weight: 400;
+  line-height: 1.33;
+}
+
+.type-body-18-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-18);
+  font-weight: 400;
+  line-height: 1.63;
+}
+
+.type-heading-17 {
+  font-family: var(--font-inter);
+  font-size: var(--text-17);
+  font-weight: 700;
+  line-height: 1.50;
+}
+
+.type-body-17 {
+  font-family: var(--font-inter-inter-fallback-ui-sans-serif);
+  font-size: var(--text-17);
+  font-weight: 500;
+  line-height: 1.29;
+}
+
+.type-body-16 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.type-h3-16 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: var(--tracking-0-6);
+}
+
+.type-button {
+  font-family: var(--font-inter);
+  font-size: var(--text-16);
+  font-weight: 600;
+  line-height: 1.50;
+}
+
+.type-h3-16-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.type-link-16 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-body-16-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-body-16-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 500;
+  line-height: 0.75;
+}
+
+.type-button-16 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-header {
+  font-family: var(--font-geist);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-400 {
+  font-family: var(--font-geist-geist-fallback-ui-sans-serif);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-button-16-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-button-16-400 {
+  font-family: var(--font-geist);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-400 {
+  font-family: var(--font-geist-geist-fallback-ui-sans-serif);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-400 {
+  font-family: var(--font-geist);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-h2-16 {
+  font-family: var(--font-geist);
+  font-size: var(--text-16);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-16-300 {
+  font-family: var(--font-geist);
+  font-size: var(--text-16);
+  font-weight: 300;
+  line-height: 1.50;
+}
+
+.type-subheading-15 {
+  font-family: var(--font-space-grotesk-space-grotesk-fallback);
+  font-size: var(--text-15);
+  font-weight: 700;
+  line-height: 1.37;
+}
+
+.type-link-15 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-15);
+  font-weight: 600;
+  line-height: 1.50;
+}
+
+.type-subheading-15-600 {
+  font-family: var(--font-inter);
+  font-size: var(--text-15);
+  font-weight: 600;
+  line-height: 1.50;
+}
+
+.type-small-body {
+  font-family: var(--font-plus-jakarta-sans-plus-jakarta-sans-fallback-ui-sans-serif);
+  font-size: var(--text-15);
+  font-weight: 500;
+  line-height: 0.80;
+}
+
+.type-small-body-15 {
+  font-family: var(--font-inter);
+  font-size: var(--text-15);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-link-15-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-15);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-link-15-500 {
+  font-family: var(--font-geist);
+  font-size: var(--text-15);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-small-body-15-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-15);
+  font-weight: 400;
+  line-height: 1.60;
+}
+
+.type-link-14 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 600;
+  line-height: 1.50;
+}
+
+.type-body-14 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 600;
+  line-height: 1.43;
+}
+
+.type-body-14-500 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 500;
+  line-height: 1.57;
+}
+
+.type-small-body-14 {
+  font-family: var(--font-geist);
+  font-size: var(--text-14);
+  font-weight: 500;
+  line-height: 1.29;
+}
+
+.type-small-body-14-500 {
+  font-family: var(--font-instrument-sans);
+  font-size: var(--text-14);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: var(--tracking-0-42);
+}
+
+.type-small-body-14-400 {
+  font-family: var(--font-geist-mono);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.63;
+}
+
+.type-link-14-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.40;
+}
+
+.type-small-body-14-400 {
+  font-family: var(--font-geist-mono);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.63;
+}
+
+.type-body-14-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.63;
+}
+
+.type-body-14-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.71;
+}
+
+.type-small-body-14-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.type-body-14-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.43;
+}
+
+.type-small-body-14-400 {
+  font-family: var(--font-geist-mono);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-14-400 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-14);
+  font-weight: 400;
+  line-height: 1.14;
+}
+
+.type-small-body-14-300 {
+  font-family: var(--font-geist);
+  font-size: var(--text-14);
+  font-weight: 300;
+  line-height: 1.71;
+}
+
+.type-button-13 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 600;
+  line-height: 1.50;
+}
+
+.type-button-13-600 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 600;
+  line-height: 1.50;
+}
+
+.type-caption {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-13);
+  font-weight: 600;
+  line-height: 1.00;
+}
+
+.type-caption-13 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 600;
+  line-height: 1.23;
+}
+
+.type-caption-13-500 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-button-13-500 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-caption-13-500 {
+  font-family: var(--font-instrument-sans);
+  font-size: var(--text-13);
+  font-weight: 500;
+  line-height: 1.23;
+  letter-spacing: var(--tracking-0-3);
+}
+
+.type-caption-13-500 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 500;
+  line-height: 1.23;
+}
+
+.type-caption-13-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-body-13 {
+  font-family: var(--font-inter);
+  font-size: var(--text-13);
+  font-weight: 400;
+  line-height: 1.23;
+}
+
+.type-caption-12 {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-12);
+  font-weight: 600;
+  line-height: 2.00;
+}
+
+.type-caption-12-500 {
+  font-family: var(--font-inter);
+  font-size: var(--text-12);
+  font-weight: 500;
+  line-height: 1.33;
+}
+
+.type-caption-12-500 {
+  font-family: var(--font-space-grotesk);
+  font-size: var(--text-12);
+  font-weight: 500;
+  line-height: 1.50;
+}
+
+.type-body-12 {
+  font-family: var(--font-geist);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.type-caption-12-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.33;
+}
+
+.type-caption-12-400 {
+  font-family: var(--font-inter-inter-fallback-ui-sans-serif);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.33;
+}
+
+.type-body-12-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.33;
+  letter-spacing: var(--tracking-1);
+}
+
+.type-caption-12-400 {
+  font-family: var(--font-geist);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.73;
+}
+
+.type-caption-12-400 {
+  font-family: var(--font-geist);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.73;
+}
+
+.type-caption-12-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-12);
+  font-weight: 400;
+  line-height: 1.33;
+}
+
+.type-small {
+  font-family: var(--font-plus-jakarta-sans);
+  font-size: var(--text-11);
+  font-weight: 600;
+  line-height: 2.18;
+}
+
+.type-small-11 {
+  font-family: var(--font-geist);
+  font-size: var(--text-11);
+  font-weight: 500;
+  line-height: 1.27;
+}
+
+.type-small-11-500 {
+  font-family: var(--font-geist);
+  font-size: var(--text-11);
+  font-weight: 500;
+  line-height: 1.27;
+}
+
+.type-small-11-500 {
+  font-family: var(--font-geist-geist-fallback-ui-sans-serif);
+  font-size: var(--text-11);
+  font-weight: 500;
+  line-height: 1.27;
+}
+
+.type-small-11-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-11);
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+.type-small-11-400 {
+  font-family: var(--font-geist-mono);
+  font-size: var(--text-11);
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.type-small-11-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-11);
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.type-small-10 {
+  font-family: var(--font-inter);
+  font-size: var(--text-10);
+  font-weight: 600;
+  line-height: 1.60;
+}
+
+.type-small-10-500 {
+  font-family: var(--font-inter);
+  font-size: var(--text-10);
+  font-weight: 500;
+  line-height: 1.20;
+}
+
+.type-small-10-500 {
+  font-family: var(--font-geist);
+  font-size: var(--text-10);
+  font-weight: 500;
+  line-height: 2.07;
+}
+
+.type-small-10-500 {
+  font-family: var(--font-inter-inter-fallback-ui-sans-serif);
+  font-size: var(--text-10);
+  font-weight: 500;
+  line-height: 1.20;
+}
+
+.type-small-10-400 {
+  font-family: var(--font-inter);
+  font-size: var(--text-10);
+  font-weight: 400;
+  line-height: 1.20;
+}
+
+.type-small-8 {
+  font-family: var(--font-inter);
+  font-size: var(--text-8);
+  font-weight: 500;
+  line-height: 1.38;
+}
+
+
+
+URL	Miscellaneous	Widgets	Analytics	Comment systems	Security	Font scripts	CDN	Marketing automation	Advertising	Webcams	Tag managers	Live chat	JavaScript libraries	Cookie compliance	Accessibility	SSL/TLS certificate authorities	Affiliate programs	Appointment scheduling	Surveys	A/B testing	Email	Personalization	Retargeting	RUM	Geolocation	Browser fingerprinting	Loyalty & rewards	Feature management	Segmentation	Hosting	Translation	Reviews	Buy now pay later	Performance	Reservations & delivery	Referral marketing	Digital asset management	Content curation	Customer data platform	Cart abandonment	Shipping carriers	Recruitment & staffing	Returns	Livestreaming	Ticket booking	Augmented reality	Domain parking	Fundraising & donations	JavaScript frameworks	Web servers	Mobile frameworks	Payment processors	SEO	User onboarding	Containers	PaaS	IaaS	WordPress plugins	Shopify apps	Form builders	Video players	Web frameworks	Caching	Web server extensions	Reverse proxies	Load balancers	UI frameworks	WordPress themes	Shopify themes	Drupal themes	JavaScript graphics	Operating systems	Maps	Authentication	Cross border ecommerce	Fulfilment	Ecommerce frontends	Rich text editors	Programming languages	Databases	CRM	Cryptominers	Editor	Search engines	CI	Database managers	Documentation tools	Hosting panels	Issue trackers	Webmail	Network services		Development	Network storage	CMS	Message boards	Ecommerce	Photo galleries	Wikis	Blogs	LMS	Media servers	Remote Access	Feed readers	DMS	Page builder	Accounting	Static site generators	Phone number	Skype	WhatsApp	Email address	Email address (verified)	Email address (safe)	Twitter	Facebook	Instagram	GitHub	TikTok	YouTube	Pinterest	LinkedIn	Owler	Title	Description	Copyright	Copyright year	Responsive	schema.org types	Cert organisation	Cert country	Cert state	Cert locality	Cert issuer	Cert protocol	Cert expiry	SPF record	DMARC record	Google Analytics	Google AdSense	Medianet	Facebook	Optimizely	Company name	Inferred company name	Industry	About	Locations	Company size	Company type	Company founded	People
+https://uddoktapay.com	PWA ; Open Graph ; HTTP/3		Google Analytics ; Cloudflare Browser Insights				Cloudflare						Framer Motion											Cloudflare Browser Insights										Priority Hints															React ; Next.js	Next.js												Next.js					Tailwind CSS																										Turbopack				Cart Functionality											Next.js																																												
