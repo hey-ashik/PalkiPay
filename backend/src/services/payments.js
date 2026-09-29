@@ -391,7 +391,7 @@ async function sweep() {
   await db.query("UPDATE payments SET status = 'expired' WHERE status = 'unpaid' AND expires_at < UTC_TIMESTAMP()");
   const stale = await db.query(
     `SELECT * FROM payments WHERE status = 'processing'
-       AND submitted_at < UTC_TIMESTAMP() - INTERVAL ? SECOND LIMIT 100`,
+       AND submitted_at <= UTC_TIMESTAMP() - INTERVAL ? SECOND LIMIT 100`,
     [config.payments.verifyTimeoutSeconds]
   );
   for (const p of stale) await refresh(p);
