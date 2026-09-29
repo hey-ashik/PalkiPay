@@ -17,14 +17,14 @@ const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 // Compared against when the email is unknown, so timing doesn't reveal which emails exist.
 const DUMMY_HASH = bcrypt.hashSync('palkipay-timing-guard', 10);
 
-function issueSession(res, user, remember) {
+function issueSession(req, res, user, remember) {
   const token = jwt.sign({ sub: user.id }, config.jwt.secret, {
     expiresIn: remember ? '30d' : config.jwt.expiresIn,
   });
   res.cookie(config.jwt.cookieName, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: config.appUrl.startsWith('https://'),
+    secure: req.secure || config.appUrl.startsWith('https://'),
     path: '/',
     ...(remember ? { maxAge: THIRTY_DAYS } : {}),
   });
@@ -99,7 +99,7 @@ router.post('/register', limits.auth, validate(schemas.register), async (req, re
   );
 
   const user = await merchants.findById(result.insertId);
-  const token = issueSession(res, user, true);
+  const token = issueSession(req, res, user, true);
   res.status(201).json({ status: true, token, ...(await sessionPayload(user)) });
 });
 
@@ -112,7 +112,7 @@ router.post('/login', limits.auth, validate(schemas.login), async (req, res) => 
 
   await db.query('UPDATE users SET last_login_at = UTC_TIMESTAMP() WHERE id = ?', [row.id]);
   const user = await merchants.findById(row.id);
-  const token = issueSession(res, user, remember !== false);
+  const token = issueSession(req, res, user, remember !== false);
   res.json({ status: true, token, ...(await sessionPayload(user)) });
 });
 
@@ -123,6 +123,19 @@ router.post('/logout', (_req, res) => {
 
 router.get('/me', requireAuth, async (req, res) => {
   res.json({ status: true, ...(await sessionPayload(req.user)) });
+});
+
+/**
+ * Like /me, but answers 200 for signed-out visitors so public pages can check
+ * the session without a failed request in the browser console.
+ */
+router.get('/session', async (req, res, next) => {
+  const token = req.get('authorization')?.startsWith('Bearer ') || req.cookies?.[config.jwt.cookieName];
+  if (!token) return res.json({ status: true, authenticated: false });
+  requireAuth(req, res, async (err) => {
+    if (err) return err.status === 401 || err.status === 403 ? res.json({ status: true, authenticated: false }) : next(err);
+    res.json({ status: true, authenticated: true, ...(await sessionPayload(req.user)) });
+  }).catch(next);
 });
 
 /** One account = one slug. It can be claimed once and is permanent after that. */

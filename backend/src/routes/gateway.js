@@ -4,6 +4,7 @@ const express = require('express');
 const schemas = require('../validation/schemas');
 const payments = require('../services/payments');
 const { validate, requireApiKey, limits } = require('../middleware');
+const { publicUrl } = require('../utils');
 
 /**
  * Merchant-facing payment API, authenticated by API key.
@@ -14,7 +15,7 @@ const { validate, requireApiKey, limits } = require('../middleware');
 const router = express.Router({ mergeParams: true });
 
 async function createCheckout(req, res) {
-  const { invoice_id, payment_url } = await payments.createPayment(req.merchant, req.body, 'api');
+  const { invoice_id, payment_url } = await payments.createPayment(req.merchant, req.body, 'api', publicUrl(req));
   res.json({ status: true, message: 'Payment Url', payment_url, invoice_id });
 }
 

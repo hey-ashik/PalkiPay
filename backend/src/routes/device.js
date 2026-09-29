@@ -2,12 +2,11 @@
 
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const config = require('../config');
 const db = require('../db/pool');
 const schemas = require('../validation/schemas');
 const sms = require('../services/sms');
 const { validate, requireDevice, limits } = require('../middleware');
-const { HttpError, newDeviceKey } = require('../utils');
+const { HttpError, newDeviceKey, publicUrl } = require('../utils');
 
 /**
  * API for the SMS-forwarding companion apps (Android app, iOS Shortcut).
@@ -15,10 +14,10 @@ const { HttpError, newDeviceKey } = require('../utils');
  */
 const router = express.Router({ mergeParams: true });
 
-const merchantInfo = (merchant) => ({
+const merchantInfo = (merchant, req) => ({
   name: merchant.name,
   slug: merchant.slug,
-  base_url: `${config.appUrl}/${merchant.slug}`,
+  base_url: `${publicUrl(req)}/${merchant.slug}`,
 });
 
 /** Sign in from the app with dashboard credentials → a new device + its key. */
@@ -39,7 +38,7 @@ router.post('/login', limits.auth, validate(schemas.deviceLogin), async (req, re
     'INSERT INTO devices (user_id, name, platform, device_key, app_version, last_seen_at) VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP())',
     [user.id, name, platform, deviceKey, appVersion || null]
   );
-  res.status(201).json({ status: true, device_key: deviceKey, merchant: merchantInfo(user) });
+  res.status(201).json({ status: true, device_key: deviceKey, merchant: merchantInfo(user, req) });
 });
 
 router.use(requireDevice, limits.device);
@@ -49,7 +48,7 @@ router.get('/me', (req, res) => {
   res.json({
     status: true,
     device: { id: d.id, name: d.name, platform: d.platform, is_active: Boolean(d.is_active) },
-    merchant: merchantInfo(req.merchant),
+    merchant: merchantInfo(req.merchant, req),
   });
 });
 

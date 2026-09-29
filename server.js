@@ -10,6 +10,7 @@
  *
  * This is the entry file to use on Hostinger (Node.js app → entry file: server.js).
  */
+const http = require('http');
 const path = require('path');
 
 const dev = process.argv.includes('--dev');
@@ -22,23 +23,21 @@ const frontendDir = path.join(__dirname, 'frontend');
 const next = require(require.resolve('next', { paths: [frontendDir] }));
 
 async function main() {
-  const nextApp = next({ dev, dir: frontendDir, port: config.port });
+  const app = createApp();
+  const server = http.createServer(app);
+
+  // Passing httpServer lets Next attach its hot-reload websocket in development.
+  const nextApp = next({ dev, dir: frontendDir, port: config.port, httpServer: server });
   const handle = nextApp.getRequestHandler();
   await nextApp.prepare();
 
-  const app = createApp();
   app.use((req, res) => handle(req, res));
 
-  const server = app.listen(config.port, () => {
-    console.log(`\n  PalkiPay ${dev ? '(development)' : '(production)'} ready`);
+  server.listen(config.port, () => {
+    console.log(`\n  PalkiPay ${dev ? '(development)' : '(production)'} ready on port ${config.port}`);
     console.log(`  → ${config.appUrl}\n`);
     startBackground();
   });
-
-  if (dev && typeof nextApp.getUpgradeHandler === 'function') {
-    const upgrade = nextApp.getUpgradeHandler();
-    server.on('upgrade', (req, socket, head) => upgrade(req, socket, head));
-  }
 
   const shutdown = () => server.close(() => process.exit(0));
   process.on('SIGTERM', shutdown);

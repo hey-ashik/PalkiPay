@@ -1,12 +1,11 @@
 'use strict';
 
 const express = require('express');
-const config = require('../config');
 const db = require('../db/pool');
 const merchants = require('../services/merchants');
 const slugs = require('../services/slugs');
 const { PROVIDERS } = require('../services/providers');
-const { HttpError } = require('../utils');
+const { HttpError, publicUrl } = require('../utils');
 
 const router = express.Router();
 
@@ -25,10 +24,10 @@ router.get('/health', async (_req, res) => {
   });
 });
 
-router.get('/config', (_req, res) => {
+router.get('/config', (req, res) => {
   res.json({
     status: true,
-    app_url: config.appUrl,
+    app_url: publicUrl(req),
     providers: Object.values(PROVIDERS).map(({ id, name, ussd }) => ({ id, name, ussd })),
   });
 });

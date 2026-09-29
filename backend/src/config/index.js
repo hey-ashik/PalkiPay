@@ -25,6 +25,8 @@ const config = {
   isProd: env === 'production',
   port: int(process.env.PORT, 3000),
   appUrl,
+  /** When APP_URL is not set, public links are built from the incoming request's host. */
+  appUrlExplicit: Boolean(process.env.APP_URL),
 
   db: {
     host: process.env.DB_HOST || '127.0.0.1',

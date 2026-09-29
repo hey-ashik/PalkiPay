@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const config = require('../config');
 
 const ALPHANUM = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -44,6 +45,15 @@ const normalizeTrxId = (value) => String(value || '').replace(/\s+/g, '').toUppe
 /** MySQL DATETIME (UTC) from a Date. */
 const toSqlDate = (date) => date.toISOString().slice(0, 19).replace('T', ' ');
 
+/**
+ * Public origin for links shown to users (payment URLs, API base URLs).
+ * Uses APP_URL when set, otherwise the host the request came in on.
+ */
+function publicUrl(req) {
+  if (config.appUrlExplicit || !req) return config.appUrl;
+  return `${req.protocol}://${req.get('host')}`;
+}
+
 function parseJson(value, fallback = null) {
   if (value == null || value === '') return fallback;
   if (typeof value === 'object') return value;
@@ -67,4 +77,5 @@ module.exports = {
   normalizeTrxId,
   toSqlDate,
   parseJson,
+  publicUrl,
 };

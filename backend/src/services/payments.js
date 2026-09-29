@@ -21,7 +21,7 @@ const FINAL_STATUSES = ['completed', 'failed', 'cancelled', 'expired'];
 /** Statuses that are waiting for a matching SMS. */
 const AWAITING_SMS = ['processing', 'pending'];
 
-const checkoutUrl = (slug, invoiceId) => `${config.appUrl}/${slug}/checkout/${invoiceId}`;
+const checkoutUrl = (slug, invoiceId, base = config.appUrl) => `${base}/${slug}/checkout/${invoiceId}`;
 
 /** Bangladesh is UTC+6 all year (no DST). */
 function dhakaDate(value) {
@@ -53,7 +53,7 @@ async function loadMerchant(payment) {
  * @param input     validated { full_name, email, amount, metadata, redirect_url, cancel_url,
  *                              webhook_url, return_type, description }
  */
-async function createPayment(merchant, input, source = 'api') {
+async function createPayment(merchant, input, source = 'api', base = config.appUrl) {
   if (!merchant.slug) {
     throw new HttpError(400, 'Finish your PalkiPay account setup (choose a URL slug) before accepting payments.');
   }
@@ -88,7 +88,7 @@ async function createPayment(merchant, input, source = 'api') {
     ]
   );
 
-  return { invoice_id: invoiceId, payment_url: checkoutUrl(merchant.slug, invoiceId) };
+  return { invoice_id: invoiceId, payment_url: checkoutUrl(merchant.slug, invoiceId, base) };
 }
 
 // ────────────────────────────────────────────────────────────────────────────

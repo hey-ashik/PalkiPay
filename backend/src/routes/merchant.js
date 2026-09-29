@@ -10,12 +10,12 @@ const sms = require('../services/sms');
 const telegram = require('../services/telegram');
 const { PROVIDERS, isProvider } = require('../services/providers');
 const { validate, requireAuth, requireSlug } = require('../middleware');
-const { HttpError, newApiKey, newDeviceKey, newSecret, toSqlDate } = require('../utils');
+const { HttpError, newApiKey, newDeviceKey, newSecret, toSqlDate, publicUrl } = require('../utils');
 
 const router = express.Router();
 router.use(requireAuth, requireSlug);
 
-const baseUrl = (user) => `${config.appUrl}/${user.slug}`;
+const baseUrl = (req) => `${publicUrl(req)}/${req.user.slug}`;
 const page = (q) => {
   const limit = Math.min(Math.max(Number.parseInt(q.limit, 10) || 20, 1), 100);
   const current = Math.max(Number.parseInt(q.page, 10) || 1, 1);
@@ -95,7 +95,7 @@ router.get('/overview', async (req, res) => {
     recent: recent.map(payments.toDashboard),
     devices: num(devices),
     sms: num(smsCounts),
-    base_url: baseUrl(req.user),
+    base_url: baseUrl(req),
   });
 });
 
@@ -124,6 +124,10 @@ router.get('/payments', async (req, res) => {
   if (isProvider(req.query.provider)) {
     where.push('payment_method = ?');
     params.push(req.query.provider);
+  }
+  if (['api', 'link'].includes(req.query.source)) {
+    where.push('source = ?');
+    params.push(req.query.source);
   }
   const q = String(req.query.q || '').trim();
   if (q) {
@@ -157,7 +161,7 @@ router.get('/payments', async (req, res) => {
 
 /** Create a shareable payment link from the dashboard (no integration needed). */
 router.post('/payments', validate(schemas.createLink), async (req, res) => {
-  const result = await payments.createPayment(req.user, req.body, 'link');
+  const result = await payments.createPayment(req.user, req.body, 'link', publicUrl(req));
   res.status(201).json({ status: true, message: 'Payment link created.', ...result });
 });
 
@@ -174,7 +178,7 @@ router.get('/payments/:invoiceId', async (req, res) => {
     status: true,
     payment: payments.toDashboard(payment),
     sms: linkedSms ? sms.toPublic(linkedSms) : null,
-    checkout_url: payments.checkoutUrl(req.user.slug, payment.invoice_id),
+    checkout_url: payments.checkoutUrl(req.user.slug, payment.invoice_id, publicUrl(req)),
   });
 });
 
@@ -320,9 +324,9 @@ router.get('/devices', async (req, res) => {
     status: true,
     data: rows.map((d) => ({ ...deviceView(d), sms_count: Number(d.sms_count) })),
     endpoints: {
-      base_url: baseUrl(req.user),
-      sms_url: `${baseUrl(req.user)}/api/device/sms`,
-      login_url: `${baseUrl(req.user)}/api/device/login`,
+      base_url: baseUrl(req),
+      sms_url: `${baseUrl(req)}/api/device/sms`,
+      login_url: `${baseUrl(req)}/api/device/login`,
     },
   });
 });
@@ -402,7 +406,7 @@ router.put('/settings/brand', validate(schemas.brand), async (req, res) => {
 // ────────────────────────────────────────────────────────────────────────────
 
 router.get('/integration', async (req, res) => {
-  const base = baseUrl(req.user);
+  const base = baseUrl(req);
   res.json({
     status: true,
     api_key: req.user.api_key,
