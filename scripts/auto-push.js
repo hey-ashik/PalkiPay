@@ -10,7 +10,7 @@
  *   node scripts/auto-push.js --quiet   one-shot, prints only on errors / pushes
  *
  * Safety: the repository is public, so before every commit the staged diff is
- * scanned for the secret values in your local .env (DB password, JWT secret, …).
+ * scanned for the secret values in your local .env files (DB password, JWT secret, …).
  * If any appear, nothing is committed.
  */
 
@@ -28,13 +28,11 @@ const IGNORE = [/(^|[\\/])\.git([\\/]|$)/, /node_modules/, /[\\/]\.next([\\/]|$)
 const log = (...m) => !QUIET && console.log('[auto-push]', ...m);
 const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 
-/** Secret values from .env that must never reach the public repo. */
+/** Secret values from local .env files that must never reach the public repo. */
 function secretValues() {
-  const file = path.join(ROOT, '.env');
-  if (!fs.existsSync(file)) return [];
-  return fs
-    .readFileSync(file, 'utf8')
-    .split(/\r?\n/)
+  const files = fs.readdirSync(ROOT).filter((f) => /^\.env(\..+)?$/.test(f) && f !== '.env.example');
+  return files
+    .flatMap((f) => fs.readFileSync(path.join(ROOT, f), 'utf8').split(/\r?\n/))
     .map((line) => line.match(/^\s*([A-Z0-9_]*(PASSWORD|SECRET|TOKEN|KEY)[A-Z0-9_]*)\s*=\s*(.+?)\s*$/))
     .filter(Boolean)
     .map((m) => m[3].replace(/^["']|["']$/g, ''))

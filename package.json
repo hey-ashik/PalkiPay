@@ -16,11 +16,16 @@
     "dev": "node server.js --dev",
     "build": "npm run build --workspace frontend",
     "start": "node server.js",
-    "dev:api": "npm run dev --workspace backend",
-    "dev:web": "npm run dev --workspace frontend",
+    "db:start": "node scripts/local-db.js start",
+    "db:stop": "node scripts/local-db.js stop",
     "migrate": "npm run migrate --workspace backend",
     "test": "npm test --workspace backend",
+    "dev:api": "npm run dev --workspace backend",
+    "dev:web": "npm run dev --workspace frontend",
     "push": "node scripts/auto-push.js",
     "autopush": "node scripts/auto-push.js --watch"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
   }
 }
