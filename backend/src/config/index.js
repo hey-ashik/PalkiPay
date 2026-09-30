@@ -14,7 +14,19 @@ for (const file of [backendEnv, rootEnv]) {
 }
 
 const env = process.env.NODE_ENV || 'development';
-const appUrl = (process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`).replace(/\/+$/, '');
+/**
+ * Values pasted into a hosting panel sometimes carry stray spaces or quotes
+ * ("secret"), which dotenv would strip from a .env file — strip them here too.
+ */
+function clean(value) {
+  if (value == null) return undefined;
+  const v = String(value).trim();
+  const quoted = v.length >= 2 && (v[0] === '"' || v[0] === "'") && v[v.length - 1] === v[0];
+  return quoted ? v.slice(1, -1) : v;
+}
+const read = (key) => clean(process.env[key]) || undefined;
+
+const appUrl = (read('APP_URL') || `http://localhost:${process.env.PORT || 3000}`).replace(/\/+$/, '');
 
 function int(value, fallback) {
   const n = Number.parseInt(value, 10);
@@ -30,16 +42,16 @@ const config = {
   appUrlExplicit: Boolean(process.env.APP_URL),
 
   db: {
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: int(process.env.DB_PORT, 3306),
-    name: process.env.DB_NAME || 'palkipay',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
+    host: read('DB_HOST') || '127.0.0.1',
+    port: int(read('DB_PORT'), 3306),
+    name: read('DB_NAME') || 'palkipay',
+    user: read('DB_USER') || 'root',
+    password: read('DB_PASSWORD') || '',
     connectionLimit: int(process.env.DB_POOL_SIZE, 10),
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET || '',
+    secret: read('JWT_SECRET') || '',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
     cookieName: 'pp_session',
   },

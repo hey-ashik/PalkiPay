@@ -26,16 +26,16 @@ async function ensureDatabase() {
 }
 
 async function runMigrations({ log = console.log } = {}) {
-  const { pool } = require('./pool');
-  let conn;
+  const db = require('./pool');
   try {
-    conn = await pool.getConnection();
+    const via = await db.connect();
+    log(`[db] connected via ${via}`);
   } catch (err) {
     if (err.code !== 'ER_BAD_DB_ERROR') throw err;
     log(`[db] database "${config.db.name}" not found — creating it`);
     await ensureDatabase();
-    conn = await pool.getConnection();
   }
+  const conn = await db.pool.getConnection();
 
   try {
     // Serialise migrations across processes.

@@ -30,6 +30,8 @@ router.get('/health', async (_req, res) => {
     status: database === 'ok' && s.web === 'ready',
     service: 'palkipay',
     database,
+    database_via: s.databaseVia || null,
+    database_error: database === 'ok' ? null : s.databaseError,
     migrations: s.database,
     web: s.web,
     web_error: s.webError,

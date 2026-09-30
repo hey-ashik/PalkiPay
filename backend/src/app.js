@@ -67,7 +67,7 @@ async function startBackground({ retryMs = 30_000 } = {}) {
       runtime.set({ database: 'ready', databaseError: null });
       break;
     } catch (err) {
-      runtime.set({ database: 'error', databaseError: `${err.code || 'ERROR'}: ${err.message}` });
+      runtime.set({ database: 'error', databaseError: `${err.code || 'ERROR'}: ${require('./db/pool').mask(err.message)}` });
       console.error(`[db] cannot prepare database (${err.code || err.message}) — retrying in ${retryMs / 1000}s`);
       await new Promise((r) => setTimeout(r, retryMs));
     }
