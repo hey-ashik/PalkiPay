@@ -1,0 +1,5 @@
+# Normalise line endings — the production server is Linux
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary

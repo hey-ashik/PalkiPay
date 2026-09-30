@@ -1,0 +1,92 @@
+{
+  "app": {
+    "[project]/frontend/src/app/[slug]/checkout/[invoiceId]/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/developers/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/devices/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/payment-links/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/payment-methods/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/settings/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/sms/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/telegram/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/dashboard/transactions/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/[slug]/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/_not-found/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/docs/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/login/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/onboarding/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ],
+    "[project]/frontend/src/app/register/page": [
+      "static/media/fba5a26ea33df6a3-s.p.18rizl4rsrl42.woff2",
+      "static/media/6ea8d1bb8ea4af7a-s.p.1kk_wfe381bov.woff2",
+      "static/media/797e433ab948586e-s.p.0r6juujl39pe6.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

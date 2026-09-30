@@ -1,0 +1,31 @@
+{
+  "name": "palkipay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PalkiPay — automated bKash, Nagad, Rocket & Upay payment gateway for Bangladeshi businesses.",
+  "main": "server.js",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "node server.js --dev",
+    "build": "node scripts/check-build.js",
+    "start": "node server.js",
+    "db:start": "node scripts/local-db.js start",
+    "db:stop": "node scripts/local-db.js stop",
+    "migrate": "npm run migrate --workspace backend",
+    "test": "npm test --workspace backend",
+    "dev:api": "npm run dev --workspace backend",
+    "dev:web": "npm run dev --workspace frontend",
+    "push": "node scripts/auto-push.js",
+    "autopush": "node scripts/auto-push.js --watch"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}

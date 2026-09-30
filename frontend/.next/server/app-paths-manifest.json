@@ -1,0 +1,21 @@
+{
+  "/[slug]/checkout/[invoiceId]/page": "app/[slug]/checkout/[invoiceId]/page.js",
+  "/[slug]/dashboard/developers/page": "app/[slug]/dashboard/developers/page.js",
+  "/[slug]/dashboard/devices/page": "app/[slug]/dashboard/devices/page.js",
+  "/[slug]/dashboard/page": "app/[slug]/dashboard/page.js",
+  "/[slug]/dashboard/payment-links/page": "app/[slug]/dashboard/payment-links/page.js",
+  "/[slug]/dashboard/payment-methods/page": "app/[slug]/dashboard/payment-methods/page.js",
+  "/[slug]/dashboard/settings/page": "app/[slug]/dashboard/settings/page.js",
+  "/[slug]/dashboard/sms/page": "app/[slug]/dashboard/sms/page.js",
+  "/[slug]/dashboard/telegram/page": "app/[slug]/dashboard/telegram/page.js",
+  "/[slug]/dashboard/transactions/page": "app/[slug]/dashboard/transactions/page.js",
+  "/[slug]/page": "app/[slug]/page.js",
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/docs/page": "app/docs/page.js",
+  "/icon.svg/route": "app/icon.svg/route.js",
+  "/login/page": "app/login/page.js",
+  "/onboarding/page": "app/onboarding/page.js",
+  "/page": "app/page.js",
+  "/register/page": "app/register/page.js"
+}

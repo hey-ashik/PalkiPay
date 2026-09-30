@@ -1,0 +1,21 @@
+{
+  "/[slug]/checkout/[invoiceId]/page": "/[slug]/checkout/[invoiceId]",
+  "/[slug]/dashboard/developers/page": "/[slug]/dashboard/developers",
+  "/[slug]/dashboard/devices/page": "/[slug]/dashboard/devices",
+  "/[slug]/dashboard/page": "/[slug]/dashboard",
+  "/[slug]/dashboard/payment-links/page": "/[slug]/dashboard/payment-links",
+  "/[slug]/dashboard/payment-methods/page": "/[slug]/dashboard/payment-methods",
+  "/[slug]/dashboard/settings/page": "/[slug]/dashboard/settings",
+  "/[slug]/dashboard/sms/page": "/[slug]/dashboard/sms",
+  "/[slug]/dashboard/telegram/page": "/[slug]/dashboard/telegram",
+  "/[slug]/dashboard/transactions/page": "/[slug]/dashboard/transactions",
+  "/[slug]/page": "/[slug]",
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/docs/page": "/docs",
+  "/icon.svg/route": "/icon.svg",
+  "/login/page": "/login",
+  "/onboarding/page": "/onboarding",
+  "/page": "/",
+  "/register/page": "/register"
+}

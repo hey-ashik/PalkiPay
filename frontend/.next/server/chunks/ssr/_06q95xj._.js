@@ -1,0 +1,85 @@
+module.exports=[12782,a=>{"use strict";var b=a.i(87924),c=a.i(72131),d=a.i(38246),e=a.i(93931),f=a.i(18688),g=a.i(55681),h=a.i(77064),i=a.i(26766),j=a.i(19783),k=a.i(64831);let l={name:"webhook",size:24,node:[["path",{d:"M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2",key:"q3hayz"}],["path",{d:"m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06",key:"1go1hn"}],["path",{d:"m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8",key:"qlwsc0"}]]};l.node;let m=(0,k.default)(l);var n=a.i(23292),o=a.i(75780),p=a.i(2979),q=a.i(9348),r=a.i(44343),s=a.i(28457),t=a.i(34075);a.s(["default",0,function(){var a,k;let{origin:l}=(0,s.useDashboard)(),{data:u,mutate:v}=(0,e.default)("/api/merchant/integration",t.fetcher),[w,x]=(0,c.useState)(!1),[y,z]=(0,c.useState)("node"),[A,B]=(0,c.useState)(!1),[C,D]=(0,c.useState)(!1);async function E(){D(!0);try{let a=await t.api.post("/api/merchant/integration/regenerate-key");n.toast.success(a.message),B(!1),x(!0),v()}catch(a){n.toast.error(a instanceof Error?a.message:"Failed")}finally{D(!1)}}let F=u?(a=u.base_url,k=w?u.api_key:"YOUR_API_KEY",{curl:`# 1. Create a payment
+curl -X POST "${a}/api/checkout-v2" \\
+  -H "Content-Type: application/json" \\
+  -H "PALKIPAY-API-KEY: ${k}" \\
+  -d '{
+    "full_name": "Rahim Uddin",
+    "email": "rahim@example.com",
+    "amount": "500",
+    "metadata": { "order_id": "1042" },
+    "redirect_url": "https://yourshop.com/success",
+    "cancel_url": "https://yourshop.com/cart",
+    "webhook_url": "https://yourshop.com/api/palkipay-webhook"
+  }'
+# → { "status": true, "payment_url": "...", "invoice_id": "..." }
+
+# 2. Verify after the customer returns (?invoice_id=...)
+curl -X POST "${a}/api/verify-payment" \\
+  -H "Content-Type: application/json" \\
+  -H "PALKIPAY-API-KEY: ${k}" \\
+  -d '{ "invoice_id": "INVOICE_ID" }'
+# → { "status": "COMPLETED", "amount": "500.00", "transaction_id": "...", ... }`,node:`// Next.js — app/api/checkout/route.ts
+const PALKIPAY = "${a}";
+
+export async function POST(req: Request) {
+  const order = await req.json();
+  const res = await fetch(\`\${PALKIPAY}/api/checkout-v2\`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "PALKIPAY-API-KEY": process.env.PALKIPAY_API_KEY!,
+    },
+    body: JSON.stringify({
+      full_name: order.name,
+      email: order.email,
+      amount: order.total,
+      metadata: { order_id: order.id },
+      redirect_url: \`\${process.env.SITE_URL}/order/success\`,
+      cancel_url: \`\${process.env.SITE_URL}/cart\`,
+      webhook_url: \`\${process.env.SITE_URL}/api/palkipay-webhook\`,
+    }),
+  });
+  const data = await res.json();
+  if (!data.status) return Response.json({ error: data.message }, { status: 400 });
+  return Response.json({ url: data.payment_url });
+}
+
+// app/order/success/page.tsx — verify before fulfilling
+export async function verify(invoiceId: string) {
+  const res = await fetch(\`\${PALKIPAY}/api/verify-payment\`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "PALKIPAY-API-KEY": process.env.PALKIPAY_API_KEY!,
+    },
+    body: JSON.stringify({ invoice_id: invoiceId }),
+    cache: "no-store",
+  });
+  const payment = await res.json();
+  return payment.status === "COMPLETED";
+}`,php:`<?php
+// Create a payment
+$ch = curl_init("${a}/api/checkout-v2");
+curl_setopt_array($ch, [
+  CURLOPT_POST => true,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_HTTPHEADER => [
+    "Content-Type: application/json",
+    "PALKIPAY-API-KEY: " . getenv("PALKIPAY_API_KEY"),
+  ],
+  CURLOPT_POSTFIELDS => json_encode([
+    "full_name"    => "Rahim Uddin",
+    "email"        => "rahim@example.com",
+    "amount"       => "500",
+    "metadata"     => ["order_id" => "1042"],
+    "redirect_url" => "https://yourshop.com/success",
+    "cancel_url"   => "https://yourshop.com/cart",
+  ]),
+]);
+$response = json_decode(curl_exec($ch), true);
+if ($response["status"]) {
+  header("Location: " . $response["payment_url"]);
+  exit;
+}`})[y]:"";return(0,b.jsxs)(b.Fragment,{children:[(0,b.jsx)(o.PageHeader,{title:"API & integration",description:"Connect your website or app. The API is UddoktaPay-compatible — existing plugins work with your base URL and key.",action:(0,b.jsx)(d.default,{href:"/docs",target:"_blank",children:(0,b.jsxs)(p.Button,{variant:"secondary",children:[(0,b.jsx)(f.BookOpen,{className:"size-4"})," Full API docs"]})})}),u?(0,b.jsxs)("div",{className:"grid gap-4 xl:grid-cols-[1fr_1.3fr]",children:[(0,b.jsxs)("div",{className:"space-y-4",children:[(0,b.jsxs)(o.Card,{children:[(0,b.jsx)(o.CardHeader,{icon:(0,b.jsx)(i.KeyRound,{className:"size-4"}),title:"Credentials",description:"Keep your API key secret — use it only on your server."}),(0,b.jsxs)("div",{className:"space-y-4 px-5 py-5",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("p",{className:"mb-1.5 text-[13px] font-semibold text-slate-700",children:"Base URL"}),(0,b.jsxs)("div",{className:"flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-3 pr-1.5",children:[(0,b.jsx)("code",{className:"min-w-0 flex-1 truncate font-mono text-[13px] text-slate-800",children:u.base_url}),(0,b.jsx)(q.CopyButton,{value:u.base_url,label:"Base URL copied"})]})]}),(0,b.jsxs)("div",{children:[(0,b.jsx)("p",{className:"mb-1.5 text-[13px] font-semibold text-slate-700",children:"API key"}),(0,b.jsxs)("div",{className:"flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-3 pr-1.5",children:[(0,b.jsx)("code",{className:"min-w-0 flex-1 truncate font-mono text-[13px] text-slate-800",children:w?u.api_key:`${u.api_key.slice(0,6)}${"•".repeat(22)}${u.api_key.slice(-4)}`}),(0,b.jsx)("button",{onClick:()=>x(a=>!a),className:"rounded-lg p-1.5 text-slate-500 hover:bg-slate-100","aria-label":w?"Hide key":"Show key",children:w?(0,b.jsx)(h.EyeOff,{className:"size-3.5"}):(0,b.jsx)(g.Eye,{className:"size-3.5"})}),(0,b.jsx)(q.CopyButton,{value:u.api_key,label:"API key copied"})]}),(0,b.jsxs)("p",{className:"mt-1.5 text-[12.5px] text-slate-500",children:["Send it in the ",(0,b.jsx)("code",{className:"font-mono",children:"PALKIPAY-API-KEY"})," header (",(0,b.jsx)("code",{className:"font-mono",children:"RT-UDDOKTAPAY-API-KEY"})," also works)."]})]}),(0,b.jsxs)(p.Button,{variant:"danger",size:"sm",onClick:()=>B(!0),children:[(0,b.jsx)(j.RefreshCw,{className:"size-3.5"})," Regenerate key"]})]})]}),(0,b.jsxs)(o.Card,{children:[(0,b.jsx)(o.CardHeader,{title:"Endpoints"}),(0,b.jsx)("ul",{className:"divide-y divide-slate-100",children:[{method:"POST",label:"Create payment",url:u.endpoints.create_payment},{method:"POST",label:"Verify payment",url:u.endpoints.verify_payment}].map(a=>(0,b.jsxs)("li",{className:"flex items-center gap-3 px-5 py-3",children:[(0,b.jsx)("span",{className:"rounded-md bg-emerald-50 px-1.5 py-0.5 font-mono text-[11px] font-bold text-emerald-700",children:a.method}),(0,b.jsxs)("div",{className:"min-w-0 flex-1",children:[(0,b.jsx)("p",{className:"text-[13px] font-semibold text-slate-800",children:a.label}),(0,b.jsx)("p",{className:"truncate font-mono text-[12px] text-slate-500",children:a.url})]}),(0,b.jsx)(q.CopyButton,{value:a.url,label:"Endpoint copied"})]},a.label))})]}),(0,b.jsx)(o.Card,{className:"p-5",children:(0,b.jsxs)("div",{className:"flex items-start gap-3",children:[(0,b.jsx)("span",{className:"grid size-9 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-600",children:(0,b.jsx)(m,{className:"size-4"})}),(0,b.jsxs)("div",{className:"text-[13px] leading-relaxed text-slate-600",children:[(0,b.jsx)("p",{className:"text-[14px] font-semibold text-slate-900",children:"Webhooks"}),"When a payment completes, PalkiPay POSTs the payment JSON to the ",(0,b.jsx)("code",{className:"font-mono",children:"webhook_url"})," you sent (or your default webhook in Settings), with your API key in the ",(0,b.jsx)("code",{className:"font-mono",children:"PALKIPAY-API-KEY"})," header. Failed deliveries retry up to 4 times. Always confirm with verify-payment before fulfilling an order."]})]})})]}),(0,b.jsxs)(o.Card,{className:"min-w-0 overflow-hidden",children:[(0,b.jsxs)("div",{className:"flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-3",children:[(0,b.jsx)(q.Segmented,{size:"sm",value:y,onChange:z,options:[{value:"node",label:"Next.js / Node"},{value:"php",label:"PHP"},{value:"curl",label:"cURL"}]}),(0,b.jsx)(q.CopyButton,{value:F,label:"Code copied",children:"Copy code"})]}),(0,b.jsx)("pre",{className:"max-h-[640px] overflow-auto bg-navy-950 p-5 font-mono text-[12.5px] leading-relaxed text-slate-200",children:F}),(0,b.jsxs)("p",{className:"border-t border-slate-100 px-5 py-3 text-[12.5px] text-slate-500",children:["Checkout pages are hosted at ",(0,b.jsxs)("span",{className:"font-mono",children:[l.replace(/^https?:\/\//,""),"/",u.base_url.split("/").pop(),"/checkout/…"]})]})]})]}):(0,b.jsx)(q.Skeleton,{className:"h-64 rounded-2xl"}),(0,b.jsx)(r.Modal,{open:A,onClose:()=>B(!1),size:"sm",title:"Regenerate API key?",description:"Your current key stops working immediately. Update it in every store that uses PalkiPay.",footer:(0,b.jsxs)(b.Fragment,{children:[(0,b.jsx)(p.Button,{variant:"secondary",onClick:()=>B(!1),children:"Cancel"}),(0,b.jsx)(p.Button,{variant:"danger",onClick:E,loading:C,children:"Regenerate"})]}),children:(0,b.jsx)("p",{className:"text-[13.5px] text-slate-600",children:"Only do this if your key was exposed or you are rotating credentials."})})]})}],12782)},2979,a=>{"use strict";var b=a.i(87924),c=a.i(38246),d=a.i(72131),e=a.i(32501),f=a.i(9348);let g={primary:"bg-brand-gradient text-white shadow-[0_1px_0_rgb(255_255_255/0.2)_inset,0_8px_20px_-8px_rgb(0_108_250/0.6)] hover:brightness-[1.06] active:brightness-95",secondary:"bg-white text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-50 hover:text-slate-900 shadow-card",ghost:"text-slate-600 hover:bg-slate-100 hover:text-slate-900",danger:"bg-white text-red-600 ring-1 ring-inset ring-red-200 hover:bg-red-50",success:"bg-emerald-600 text-white hover:bg-emerald-700 shadow-[0_8px_20px_-10px_rgb(5_150_105/0.7)]",dark:"bg-navy-900 text-white hover:bg-navy-800"},h={sm:"h-8 px-3 text-[13px] gap-1.5 rounded-lg",md:"h-10 px-4 text-sm gap-2 rounded-xl",lg:"h-12 px-6 text-[15px] gap-2 rounded-xl"},i="inline-flex items-center justify-center font-semibold whitespace-nowrap transition-all duration-150 disabled:pointer-events-none disabled:opacity-55 select-none",j=(0,d.forwardRef)(function({variant:a="primary",size:c="md",loading:d,className:j,children:k,disabled:l,type:m="button",...n},o){return(0,b.jsxs)("button",{ref:o,type:m,disabled:l||d,className:(0,e.cn)(i,g[a],h[c],j),...n,children:[d&&(0,b.jsx)(f.Spinner,{className:"size-4"}),k]})});a.s(["Button",0,j,"ButtonLink",0,function({href:a,variant:d="primary",size:f="md",className:j,children:k,...l}){return(0,b.jsx)(c.default,{href:a,className:(0,e.cn)(i,g[d],h[f],j),...l,children:k})}])},75780,a=>{"use strict";var b=a.i(87924),c=a.i(32501);a.s(["Card",0,function({className:a,children:d,...e}){return(0,b.jsx)("div",{className:(0,c.cn)("rounded-2xl border border-slate-200/80 bg-white shadow-card",a),...e,children:d})},"CardHeader",0,function({title:a,description:d,action:e,icon:f,className:g}){return(0,b.jsxs)("div",{className:(0,c.cn)("flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4",g),children:[(0,b.jsxs)("div",{className:"flex min-w-0 items-start gap-3",children:[f&&(0,b.jsx)("div",{className:"mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600",children:f}),(0,b.jsxs)("div",{className:"min-w-0",children:[(0,b.jsx)("h2",{className:"text-[15px] font-semibold text-slate-900",children:a}),d&&(0,b.jsx)("p",{className:"mt-0.5 text-[13px] text-slate-500",children:d})]})]}),e&&(0,b.jsx)("div",{className:"flex shrink-0 items-center gap-2",children:e})]})},"PageHeader",0,function({title:a,description:c,action:d}){return(0,b.jsxs)("div",{className:"mb-6 flex flex-wrap items-end justify-between gap-4",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("h1",{className:"text-[22px] font-bold tracking-tight text-slate-900 sm:text-2xl",children:a}),c&&(0,b.jsx)("p",{className:"mt-1 text-sm text-slate-500",children:c})]}),d&&(0,b.jsx)("div",{className:"flex flex-wrap items-center gap-2",children:d})]})}])},44343,a=>{"use strict";var b=a.i(87924),c=a.i(72131),d=a.i(35112),e=a.i(74215),f=a.i(32501);a.s(["Drawer",0,function({open:a,onClose:f,title:g,children:h,footer:i}){return((0,c.useEffect)(()=>{if(!a)return;let b=a=>"Escape"===a.key&&f();return document.addEventListener("keydown",b),()=>document.removeEventListener("keydown",b)},[a,f]),!a||"u"<typeof document)?null:(0,d.createPortal)((0,b.jsxs)("div",{className:"fixed inset-0 z-50",role:"dialog","aria-modal":"true",children:[(0,b.jsx)("div",{className:"absolute inset-0 bg-slate-900/30 backdrop-blur-[1px]",onClick:f}),(0,b.jsxs)("aside",{className:"absolute inset-y-0 right-0 flex w-full max-w-[480px] flex-col bg-white shadow-2xl animate-[slide-in_.25s_cubic-bezier(.22,1,.36,1)]",children:[(0,b.jsxs)("div",{className:"flex items-center justify-between border-b border-slate-100 px-5 py-4",children:[(0,b.jsx)("div",{className:"min-w-0 text-base font-semibold text-slate-900",children:g}),(0,b.jsx)("button",{onClick:f,className:"rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700","aria-label":"Close",children:(0,b.jsx)(e.X,{className:"size-4"})})]}),(0,b.jsx)("div",{className:"flex-1 overflow-y-auto px-5 py-5",children:h}),i&&(0,b.jsx)("div",{className:"flex gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-3.5",children:i})]}),(0,b.jsx)("style",{children:"@keyframes slide-in{from{transform:translateX(100%)}to{transform:translateX(0)}}"})]}),document.body)},"Modal",0,function({open:a,onClose:g,title:h,description:i,children:j,footer:k,size:l="md"}){return((0,c.useEffect)(()=>{if(!a)return;let b=a=>"Escape"===a.key&&g();document.addEventListener("keydown",b);let c=document.body.style.overflow;return document.body.style.overflow="hidden",()=>{document.removeEventListener("keydown",b),document.body.style.overflow=c}},[a,g]),!a||"u"<typeof document)?null:(0,d.createPortal)((0,b.jsxs)("div",{className:"fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4",role:"dialog","aria-modal":"true",children:[(0,b.jsx)("div",{className:"absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] animate-[fade-up_.2s_ease-out]",onClick:g}),(0,b.jsxs)("div",{className:(0,f.cn)("relative max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-white shadow-2xl animate-fade-up sm:rounded-2xl","sm"===l?"sm:max-w-md":"lg"===l?"sm:max-w-2xl":"sm:max-w-lg"),children:[(0,b.jsxs)("div",{className:"flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4",children:[(0,b.jsxs)("div",{children:[(0,b.jsx)("h2",{className:"text-base font-semibold text-slate-900",children:h}),i&&(0,b.jsx)("p",{className:"mt-0.5 text-[13px] text-slate-500",children:i})]}),(0,b.jsx)("button",{onClick:g,className:"-mr-1 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700","aria-label":"Close",children:(0,b.jsx)(e.X,{className:"size-4"})})]}),(0,b.jsx)("div",{className:"px-5 py-5",children:j}),k&&(0,b.jsx)("div",{className:"flex justify-end gap-2 border-t border-slate-100 bg-slate-50/60 px-5 py-3.5",children:k})]})]}),document.body)}])},55681,77064,a=>{"use strict";var b=a.i(64831);let c={name:"eye",size:24,node:[["path",{d:"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",key:"1nclc0"}],["circle",{cx:"12",cy:"12",r:"3",key:"1v7zrd"}]]};c.node;let d=(0,b.default)(c);a.s(["Eye",0,d],55681);let e={name:"eye-off",size:24,node:[["path",{d:"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",key:"ct8e1f"}],["path",{d:"M14.084 14.158a3 3 0 0 1-4.242-4.242",key:"151rxh"}],["path",{d:"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",key:"13bj9a"}],["path",{d:"m2 2 20 20",key:"1ooewy"}]]};e.node;let f=(0,b.default)(e);a.s(["EyeOff",0,f],77064)},26766,a=>{"use strict";var b=a.i(64831);let c={name:"key-round",size:24,node:[["path",{d:"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",key:"1s6t7t"}],["circle",{cx:"16.5",cy:"7.5",r:".5",fill:"currentColor",key:"w0ekpg"}]]};c.node;let d=(0,b.default)(c);a.s(["KeyRound",0,d],26766)},19783,a=>{"use strict";var b=a.i(64831);let c={name:"refresh-cw",size:24,node:[["path",{d:"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8",key:"v9h5vc"}],["path",{d:"M21 3v5h-5",key:"1q7to0"}],["path",{d:"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16",key:"3uifl3"}],["path",{d:"M8 16H3v5",key:"1cv678"}]]};c.node;let d=(0,b.default)(c);a.s(["RefreshCw",0,d],19783)}];
+
+//# sourceMappingURL=_06q95xj._.js.map
