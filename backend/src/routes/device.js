@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const db = require('../db/pool');
 const schemas = require('../validation/schemas');
 const sms = require('../services/sms');
+const { PROVIDERS } = require('../services/providers');
 const { validate, requireDevice, limits } = require('../middleware');
 const { HttpError, newDeviceKey, publicUrl } = require('../utils');
 
@@ -67,16 +68,41 @@ async function ingest(req, item) {
     receivedAt: item.received_at,
     providerHint: item.provider,
   });
-  return {
+  const s = result.sms || {};
+  const outcome = {
     result: result.status,
     reason: result.reason || null,
-    sms_id: result.sms?.id || null,
-    provider: result.sms?.provider || null,
-    transaction_id: result.sms?.transaction_id || null,
-    amount: result.sms?.amount == null ? null : Number(result.sms.amount),
+    sms_id: s.id || null,
+    provider: s.provider || null,
+    amount: s.amount == null ? null : Number(s.amount),
+    from_number: s.from_number || null,
+    transaction_id: s.transaction_id || null,
+    received_at: s.received_at || null,
     matched_invoice: result.payment?.invoice_id || null,
     payment_status: result.payment?.status || null,
   };
+  outcome.summary = summarize(outcome);
+  return outcome;
+}
+
+const dhakaTime = (value) =>
+  value
+    ? new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(value))
+    : '';
+
+/** One line the phone can show as a notification (e.g. from the iOS Shortcut). */
+function summarize(o) {
+  const name = PROVIDERS[o.provider]?.name || 'Wallet';
+  if (o.result === 'invalid') return `⚠️ Not a payment SMS — ${o.reason || 'ignored'}`;
+  if (o.result === 'duplicate') return `ℹ️ Already received: ${name} TrxID ${o.transaction_id}`;
+  const parts = [
+    `✅ ${name} ৳${Number(o.amount).toFixed(2)}`,
+    o.from_number ? `from ${o.from_number}` : null,
+    `· TrxID ${o.transaction_id}`,
+    `· ${dhakaTime(o.received_at)}`,
+  ].filter(Boolean);
+  const paid = o.matched_invoice ? ` → invoice ${o.matched_invoice} ${o.payment_status}` : '';
+  return `${parts.join(' ')}${paid}`;
 }
 
 /** Forward one SMS. Always 200 for well-formed requests so apps don't retry parse failures. */

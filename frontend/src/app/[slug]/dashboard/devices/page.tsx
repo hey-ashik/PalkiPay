@@ -120,6 +120,108 @@ function DeviceRow({ device, onChange }: { device: Device; onChange: () => void 
   );
 }
 
+/** Copyable token used inside the iPhone steps. */
+function Chip({ value, label }: { value: string; label?: string }) {
+  return (
+    <span className="inline-flex max-w-full items-center gap-1 rounded-lg bg-slate-100 py-0.5 pl-2 pr-0.5 align-middle">
+      <code className="truncate font-mono text-[12px] text-slate-800">{value}</code>
+      <CopyButton value={value} label={`${label || value} copied`} className="p-1" />
+    </span>
+  );
+}
+
+function IosStep({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+  return (
+    <li className="flex gap-3">
+      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand-50 text-[12px] font-bold text-brand-700">{n}</span>
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-slate-900">{title}</p>
+        <div className="mt-1 space-y-1.5 text-slate-600">{children}</div>
+      </div>
+    </li>
+  );
+}
+
+/**
+ * iPhone (iOS 17/18) Shortcuts automation. The phone forwards the raw SMS;
+ * PalkiPay extracts amount, sender number, TrxID and time on the server and
+ * returns a one-line `summary` the shortcut can show as a notification.
+ */
+function IosGuide({ smsUrl, deviceKey }: { smsUrl: string; deviceKey?: string }) {
+  return (
+    <div className="mt-6 space-y-5 text-[13.5px] leading-relaxed">
+      <p className="rounded-xl bg-brand-50/70 px-4 py-3 text-[13px] text-brand-900">
+        The iPhone only forwards the SMS. PalkiPay reads the <b>amount, sender number, TrxID and time</b> itself (bKash, Nagad, Rocket &amp; Upay), so the
+        shortcut stays simple and keeps working if a wallet changes its SMS wording.
+      </p>
+      <ol className="space-y-4">
+        <IosStep n={1} title="Get a device key">
+          <p>
+            Click <b>Add device</b> above, choose <b>iPhone</b>, and keep the key handy{deviceKey ? ':' : '.'}
+          </p>
+          {deviceKey && <Chip value={deviceKey} label="Device key" />}
+        </IosStep>
+        <IosStep n={2} title="Create the automation">
+          <p>
+            <b>Shortcuts</b> app → <b>Automation</b> tab → <b>+</b> → <b>Message</b>.
+          </p>
+          <p>
+            Tap <b>Message Contains</b> and type <Chip value="TrxID" /> (bKash &amp; Upay). Choose <b>Run Immediately</b> and turn off <b>Notify When Run</b> →{' '}
+            <b>Next</b> → <b>New Blank Automation</b>.
+          </p>
+        </IosStep>
+        <IosStep n={3} title="Send the SMS to PalkiPay">
+          <p>
+            Add the action <b>Get Contents of URL</b> and paste the URL:
+          </p>
+          <Chip value={smsUrl} label="SMS endpoint" />
+          <p>
+            Tap <b>›</b> to expand it and set <b>Method</b> to <b>POST</b>.
+          </p>
+          <p>
+            <b>Headers</b> → Add new header: key <Chip value="X-Device-Key" />, value = your device key.
+          </p>
+          <p>
+            <b>Request Body</b> → <b>JSON</b>, then add three <b>Text</b> fields:
+          </p>
+          <ul className="space-y-1.5 pl-1">
+            <li>
+              <Chip value="message" /> → tap the value, choose variable <b>Shortcut Input</b>, then tap it again and pick <b>Content</b>
+            </li>
+            <li>
+              <Chip value="sender" /> → <b>Shortcut Input</b> → <b>Sender</b>
+            </li>
+            <li>
+              <Chip value="received_at" /> → variable <b>Current Date</b>, tap it and set <b>Date Format</b> to <b>ISO 8601</b>
+            </li>
+          </ul>
+        </IosStep>
+        <IosStep n={4} title="Show what PalkiPay read (optional)">
+          <p>
+            Add <b>Get Dictionary Value</b>: get <b>Value</b> for key <Chip value="summary" /> in <b>Contents of URL</b>. Then add <b>Show Notification</b>{' '}
+            with <b>Dictionary Value</b>. You’ll see e.g. <i>“✅ bKash ৳500.00 from 01712345678 · TrxID BK12AB34CD · 4:30 pm”</i>.
+          </p>
+        </IosStep>
+        <IosStep n={5} title="Repeat for Nagad & Rocket">
+          <p>
+            Long-press the automation → <b>Duplicate</b>, and change <b>Message Contains</b> to <Chip value="TxnID" /> (Nagad &amp; Rocket).
+          </p>
+        </IosStep>
+        <IosStep n={6} title="Test it">
+          <p>
+            Send yourself ৳1 from another wallet, or send yourself a copy of an old wallet SMS. It appears in <b>SMS inbox</b> within seconds, and the device shows
+            as <b>Online</b> here.
+          </p>
+        </IosStep>
+      </ol>
+      <p className="rounded-xl bg-slate-50 px-4 py-3 text-[12.5px] text-slate-500">
+        Keep the iPhone online (Wi-Fi or mobile data). Automations run when the phone is locked. If nothing arrives, open <b>Shortcuts → Automation</b> and check the
+        automation is enabled, and make sure the SIM that receives wallet SMS is in this iPhone.
+      </p>
+    </div>
+  );
+}
+
 function SetupGuide({ endpoints, firstKey }: { endpoints: DevicesResponse['endpoints']; firstKey?: string }) {
   const [tab, setTab] = useState<'ios' | 'android' | 'curl'>('ios');
   const key = firstKey || 'YOUR_DEVICE_KEY';
@@ -146,24 +248,7 @@ function SetupGuide({ endpoints, firstKey }: { endpoints: DevicesResponse['endpo
           <CodeLine label="SMS endpoint" value={endpoints.sms_url} />
         </div>
 
-        {tab === 'ios' && (
-          <ol className="mt-6 space-y-3 text-[13.5px] leading-relaxed text-slate-600">
-            {[
-              <>Add a device above with platform <b>iPhone</b> and copy its key.</>,
-              <>Open the <b>Shortcuts</b> app → <b>Automation</b> → <b>+</b> → <b>Message</b>.</>,
-              <>Set <b>Sender</b> to <b>bKash</b> (repeat later for NAGAD, 16216, upay). Choose <b>Run Immediately</b>.</>,
-              <>Add the action <b>Get Contents of URL</b>. URL: the SMS endpoint above. Method: <b>POST</b>.</>,
-              <>Headers: <code className="rounded bg-slate-100 px-1 font-mono text-[12px]">X-Device-Key</code> = your device key.</>,
-              <>Request Body: <b>JSON</b> with <code className="rounded bg-slate-100 px-1 font-mono text-[12px]">message</code> = <i>Shortcut Input → Content</i> and <code className="rounded bg-slate-100 px-1 font-mono text-[12px]">sender</code> = <i>Shortcut Input → Sender</i>.</>,
-              <>Save. Send yourself ৳1 from another wallet — the SMS should appear in your SMS inbox within seconds.</>,
-            ].map((step, i) => (
-              <li key={i} className="flex gap-3">
-                <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand-50 text-[12px] font-bold text-brand-700">{i + 1}</span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
-        )}
+        {tab === 'ios' && <IosGuide smsUrl={endpoints.sms_url} deviceKey={firstKey} />}
 
         {tab === 'android' && (
           <div className="mt-6 space-y-3 text-[13.5px] leading-relaxed text-slate-600">
