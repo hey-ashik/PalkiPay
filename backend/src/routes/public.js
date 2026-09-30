@@ -31,6 +31,7 @@ router.get('/health', async (_req, res) => {
     service: 'palkipay',
     version: s.version || 'source',
     built_at: s.builtAt || null,
+    source_hash: s.sourceHash || null,
     database,
     database_via: s.databaseVia || null,
     database_error: database === 'ok' ? null : s.databaseError,

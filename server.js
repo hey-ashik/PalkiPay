@@ -58,6 +58,14 @@ try {
 } catch {
   runtime.set({ version: 'source' });
 }
+// Fingerprint of the frontend sources, taken before any build attempt can touch them.
+let SOURCE_HASH = null;
+try {
+  SOURCE_HASH = require('./scripts/source-hash').frontendSourceHash(ROOT);
+  runtime.set({ sourceHash: SOURCE_HASH });
+} catch (err) {
+  log('[web] could not fingerprint frontend sources:', err.message);
+}
 
 // ── Backend (loaded defensively so a failure is reported, not fatal) ────────
 let config = { port: Number(process.env.PORT) || 3000, appUrl: process.env.APP_URL || '' };
@@ -79,10 +87,20 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 function statusPage(res) {
   const s = runtime.state;
   const failed = s.web === 'error';
-  const title = failed ? 'PalkiPay could not start' : s.web === 'building' ? 'PalkiPay is being built…' : 'PalkiPay is starting…';
+  const TITLES = {
+    building: 'PalkiPay is being built…',
+    downloading: 'PalkiPay is being installed…',
+    waiting: 'PalkiPay is being prepared…',
+  };
+  const MESSAGES = {
+    building: 'Preparing the website for the first time. This takes a few minutes.',
+    downloading: 'Fetching the ready-made website from GitHub. This takes a few seconds.',
+    waiting: 'GitHub Actions is building this version of the website (usually 1–3 minutes after a push).',
+  };
+  const title = failed ? 'PalkiPay could not start' : TITLES[s.web] || 'PalkiPay is starting…';
   const detail = failed
     ? `<pre>${esc(s.webError || 'Unknown error')}</pre><p>Details are in <code>logs/server.log</code> and at <a href="/api/health">/api/health</a>.</p>`
-    : `<p>${s.web === 'building' ? 'Preparing the website for the first time. This takes a few minutes.' : 'This only takes a few seconds.'} The page refreshes automatically.</p>`;
+    : `<p>${MESSAGES[s.web] || 'This only takes a few seconds.'} The page refreshes automatically.</p>`;
   const warnings = s.warnings.length ? `<ul>${s.warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : '';
   res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -146,21 +164,66 @@ function runBuild() {
       } catch {
         // ignore
       }
-      const hint = /GLIBC|Failed to load SWC/i.test(tail)
-        ? 'This server cannot compile Next.js (its system glibc is too old). Deploy the prebuilt `deploy` branch ' +
-          'instead of `main` — GitHub Actions builds it on every push (see docs/DEPLOYMENT.md).\n\n'
-        : '';
-      reject(new Error(`${hint}next build exited with code ${code}\n${tail}`));
+      const err = new Error(`next build exited with code ${code}\n${tail}`);
+      // Hostinger-style servers: glibc too old for Next's native compiler.
+      err.cannotCompile = /GLIBC|Failed to load SWC/i.test(tail);
+      reject(err);
     });
   });
+}
+
+/**
+ * This server cannot compile Next.js, so install the build GitHub Actions made for
+ * exactly this code (the `deploy` branch). If that build isn't published yet —
+ * Actions runs in parallel with the deploy — wait for it.
+ */
+async function installPrebuilt() {
+  if (!SOURCE_HASH) throw new Error('Cannot fingerprint the frontend sources, so no prebuilt build can be matched.');
+  const { fetchPrebuilt } = require('./scripts/prebuilt');
+  const repo = process.env.PREBUILT_REPO || 'hey-ashik/PalkiPay';
+  const branch = process.env.PREBUILT_BRANCH || 'deploy';
+  const deadline = Date.now() + 20 * 60 * 1000;
+  let lastRemote = null;
+  for (;;) {
+    runtime.set({ web: 'downloading' });
+    try {
+      const result = await fetchPrebuilt({ repo, branch, sourceHash: SOURCE_HASH, frontendDir: FRONTEND, log });
+      if (result.ok) return;
+      if (result.remoteHash !== lastRemote) {
+        log(`[web] ${repo}@${branch} has a build for sources ${result.remoteHash}, this code is ${SOURCE_HASH} — waiting for GitHub Actions`);
+        lastRemote = result.remoteHash;
+      }
+    } catch (err) {
+      log('[web] could not download the prebuilt build:', err.message);
+    }
+    if (Date.now() > deadline) {
+      throw new Error(
+        `This server cannot compile Next.js (its glibc is too old), and no prebuilt build for this version ` +
+          `(sources ${SOURCE_HASH}) appeared on the "${branch}" branch of ${repo} within 20 minutes.\n` +
+          'Check the Actions tab on GitHub: the "Build & publish deploy branch" run for the latest commit must succeed.'
+      );
+    }
+    runtime.set({ web: 'waiting' });
+    await new Promise((r) => setTimeout(r, 20_000));
+  }
 }
 
 async function startWeb() {
   if (!app) return;
   const hasBuild = fs.existsSync(path.join(FRONTEND, '.next', 'BUILD_ID'));
   if (!dev && !hasBuild) {
-    runtime.set({ web: 'building' });
-    await runBuild();
+    if (/^(1|true|yes)$/i.test(process.env.USE_PREBUILT || '')) {
+      await installPrebuilt();
+    } else {
+      runtime.set({ web: 'building' });
+      try {
+        await runBuild();
+      } catch (err) {
+        if (!err.cannotCompile) throw err;
+        log('[web] this server cannot compile Next.js — installing the prebuilt build from GitHub instead');
+        await installPrebuilt();
+      }
+    }
   }
   const next = require(require.resolve('next', { paths: [FRONTEND] }));
   const nextApp = next({ dev, dir: FRONTEND, port: ports[0], httpServer: servers[0] });

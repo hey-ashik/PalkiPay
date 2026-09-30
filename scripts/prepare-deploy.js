@@ -51,6 +51,11 @@ for (const entry of fs.readdirSync(NEXT_DIR)) {
   fs.cpSync(path.join(NEXT_DIR, entry), path.join(OUT, 'frontend', '.next', entry), { recursive: true });
 }
 
+// 2b. Fingerprint of the sources this build came from. CI computes it before
+// `next build` runs (SOURCE_HASH env) so nothing the build touches can change it.
+const sourceHash = process.env.SOURCE_HASH || require('./source-hash').frontendSourceHash(ROOT);
+fs.writeFileSync(path.join(OUT, 'frontend', '.next', 'SOURCE_HASH'), `${sourceHash}\n`);
+
 // 3. On the host, `npm run build` must not try to compile again.
 const pkgFile = path.join(OUT, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf8'));

@@ -35,6 +35,11 @@ jobs:
       - name: Test
         run: npm test
 
+      # Servers that cannot compile (Hostinger) download the build whose hash
+      # matches their own checkout. Take it before the build touches anything.
+      - name: Fingerprint frontend sources
+        run: echo "SOURCE_HASH=$(node scripts/source-hash.js)" >> "$GITHUB_ENV"
+
       - name: Build frontend
         run: npm run build
         env:
