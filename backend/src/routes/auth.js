@@ -9,7 +9,7 @@ const schemas = require('../validation/schemas');
 const merchants = require('../services/merchants');
 const slugs = require('../services/slugs');
 const { validate, requireAuth, limits } = require('../middleware');
-const { HttpError, newApiKey } = require('../utils');
+const { HttpError, newApiKey, publicUrl } = require('../utils');
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ function issueSession(req, res, user, remember) {
   res.cookie(config.jwt.cookieName, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: req.secure || config.appUrl.startsWith('https://'),
+    secure: req.secure || publicUrl(req).startsWith('https://'),
     path: '/',
     ...(remember ? { maxAge: THIRTY_DAYS } : {}),
   });

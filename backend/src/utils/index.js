@@ -45,13 +45,31 @@ const normalizeTrxId = (value) => String(value || '').replace(/\s+/g, '').toUppe
 /** MySQL DATETIME (UTC) from a Date. */
 const toSqlDate = (date) => date.toISOString().slice(0, 19).replace('T', ' ');
 
+/** localhost, loopback and any IPv4 literal (LAN testing) — served as-is over the request's protocol. */
+const LOCAL_HOST = /^(localhost|\[::1\]|\d{1,3}(\.\d{1,3}){3})(:\d+)?$/i;
+
 /**
  * Public origin for links shown to users (payment URLs, API base URLs).
- * Uses APP_URL when set, otherwise the host the request came in on.
+ *
+ * Links follow the domain the request actually came in on, so the same code gives
+ * http://localhost:3000/... locally and https://palkipay.ashiik.com/... live — even
+ * if APP_URL was left at its localhost example value in the hosting panel.
+ * APP_URL is used when it is for the same host (its scheme wins) and for
+ * background work that has no request.
  */
 function publicUrl(req) {
-  if (config.appUrlExplicit || !req) return config.appUrl;
-  return `${req.protocol}://${req.get('host')}`;
+  const host = req && String(req.get('x-forwarded-host') || req.get('host') || '').split(',')[0].trim();
+  if (!host) return config.appUrl;
+  if (config.appUrlExplicit) {
+    try {
+      if (new URL(config.appUrl).host.toLowerCase() === host.toLowerCase()) return config.appUrl;
+    } catch {
+      // malformed APP_URL — fall through to the request host
+    }
+  }
+  if (LOCAL_HOST.test(host)) return `${req.protocol}://${host}`;
+  // A real domain: always HTTPS (proxies in front of the app often report http).
+  return `https://${host}`;
 }
 
 function parseJson(value, fallback = null) {

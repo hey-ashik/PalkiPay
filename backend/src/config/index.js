@@ -102,8 +102,12 @@ if (!config.jwt.secret) {
   console.warn('[config] JWT_SECRET not set — using a fallback secret.');
 }
 
-if (config.isProd && !config.appUrlExplicit) {
-  runtime.warn('APP_URL is not set — payment links use the request host. Set APP_URL=https://palkipay.ashiik.com in the hosting panel.');
+// Links follow the request's domain, so APP_URL is optional — but a localhost value
+// in production is almost always the .env.example value pasted into the panel.
+if (config.isProd && config.appUrlExplicit && /\/\/(localhost|127\.0\.0\.1)(:|\/|$)/i.test(config.appUrl)) {
+  runtime.warn(
+    `APP_URL is "${config.appUrl}" — links use the site's own domain instead. Set APP_URL=https://palkipay.ashiik.com in the hosting panel (Telegram webhooks use it).`
+  );
 }
 if (config.isProd && !process.env.DB_PASSWORD) {
   runtime.warn('DB_PASSWORD is not set — add the database environment variables in the hosting panel.');

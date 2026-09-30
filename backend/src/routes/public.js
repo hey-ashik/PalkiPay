@@ -16,7 +16,7 @@ const router = express.Router();
  * replace the body with their own error page. Reports which settings are present
  * (never their values).
  */
-router.get('/health', async (_req, res) => {
+router.get('/health', async (req, res) => {
   let database = 'ok';
   try {
     await db.query('SELECT 1');
@@ -32,6 +32,8 @@ router.get('/health', async (_req, res) => {
     service: 'palkipay',
     version: s.version || 'source',
     built_at: s.builtAt || null,
+    // The origin payment links are built with for this request.
+    public_url: publicUrl(req),
     source_hash: s.sourceHash || null,
     database,
     // Not secret, and the quickest way to spot a typo in the hosting panel. The password is never shown.
