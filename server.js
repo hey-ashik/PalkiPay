@@ -156,7 +156,7 @@ function runBuild() {
       stdio: ['ignore', out, out],
     });
     child.on('error', reject);
-    child.on('exit', (code) => {
+    child.on('exit', (code, signal) => {
       if (code === 0) return resolve();
       let tail = '';
       try {
@@ -164,12 +164,28 @@ function runBuild() {
       } catch {
         // ignore
       }
-      const err = new Error(`next build exited with code ${code}\n${tail}`);
-      // Hostinger-style servers: glibc too old for Next's native compiler.
-      err.cannotCompile = /GLIBC|Failed to load SWC/i.test(tail);
-      reject(err);
+      reject(new Error(`next build ${signal ? `was killed (${signal})` : `exited with code ${code}`}\n${tail}`));
     });
   });
+}
+
+/**
+ * Next.js 16's native compiler needs glibc ≥ 2.29. Shared hosts like Hostinger
+ * have older glibc, so compiling there is pointless (and the heavy build process
+ * may be killed by resource limits) — go straight to the prebuilt build.
+ */
+function canCompileNext() {
+  if (process.platform !== 'linux') return true;
+  let glibc;
+  try {
+    glibc = process.report.getReport().header.glibcVersionRuntime;
+  } catch {
+    return true;
+  }
+  if (!glibc) return true; // musl or unknown
+  const [major, minor] = glibc.split('.').map(Number);
+  runtime.set({ glibc });
+  return major > 2 || (major === 2 && minor >= 29);
 }
 
 /**
@@ -214,13 +230,16 @@ async function startWeb() {
   if (!dev && !hasBuild) {
     if (/^(1|true|yes)$/i.test(process.env.USE_PREBUILT || '')) {
       await installPrebuilt();
+    } else if (!canCompileNext()) {
+      log(`[web] glibc ${runtime.state.glibc} is too old to compile Next.js here — installing the prebuilt build from GitHub`);
+      await installPrebuilt();
     } else {
       runtime.set({ web: 'building' });
       try {
         await runBuild();
       } catch (err) {
-        if (!err.cannotCompile) throw err;
-        log('[web] this server cannot compile Next.js — installing the prebuilt build from GitHub instead');
+        // Any failed local build: the build GitHub Actions made for this code is the safe fallback.
+        log(`[web] ${err.message.split('\n')[0]} — installing the prebuilt build from GitHub instead`);
         await installPrebuilt();
       }
     }
