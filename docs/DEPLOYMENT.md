@@ -70,13 +70,24 @@ or the Claude Code hook) redeploys the site.
 
 ## Troubleshooting
 
+`server.js` starts listening on **port 3000** immediately (Hostinger’s proxy forwards there), so
+startup problems show up on the site itself instead of an opaque 503:
+
+- **“PalkiPay is being built…”** — the frontend build was missing, so the app is building it
+  (a few minutes, the page refreshes itself). Set the build command to `npm run build` to skip this.
+- **“PalkiPay could not start”** — the page shows the error. Full details: `logs/server.log` and
+  `logs/build.log` in the app folder (hPanel → File Manager).
+- **`/api/health`** always answers with diagnostics: `database`, `migrations`, `web`
+  (`starting` / `building` / `ready` / `error`), `web_error`, `warnings`, and which environment
+  variables are set (`env`, true/false only — values are never shown).
+
 | Symptom | Fix |
 | --- | --- |
+| Still a black LiteSpeed **503** page | The Node.js process isn’t running at all: check the entry file is `server.js`, the framework preset is **Express/Other** (not Next.js), and look at the deployment log in hPanel → Deployments. Then **Restart** the app. |
 | `/api/health` shows `database: error: ER_ACCESS_DENIED_ERROR` | Wrong `DB_USER`/`DB_PASSWORD`, or the user isn’t attached to the database in hPanel. |
 | `database: error: ECONNREFUSED` | Use `DB_HOST=127.0.0.1` (not `localhost`, which can resolve to IPv6 `::1`). |
-| Site works but payment links show `localhost` | `APP_URL` is missing — add it and restart the app. |
+| `warnings` mentions `JWT_SECRET` or `APP_URL` | Add that environment variable and restart the app. |
 | Build fails with “JavaScript heap out of memory” | Redeploy; if it persists, add env var `NODE_OPTIONS=--max-old-space-size=1536`. |
-| `JWT_SECRET must be set in production` in logs | Add the `JWT_SECRET` environment variable. |
 | Telegram buttons do nothing | Re-save the bot token in *Dashboard → Telegram* after the domain has SSL (this registers the webhook). |
 
 ## Using the production database from your PC (optional)

@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const config = require('./config');
+const runtime = require('./runtime');
 const { notFound, errorHandler } = require('./middleware');
 const { runMigrations } = require('./db/migrate');
 const payments = require('./services/payments');
@@ -63,10 +64,12 @@ async function startBackground({ retryMs = 30_000 } = {}) {
   for (;;) {
     try {
       await runMigrations();
+      runtime.set({ database: 'ready', databaseError: null });
       break;
     } catch (err) {
+      runtime.set({ database: 'error', databaseError: `${err.code || 'ERROR'}: ${err.message}` });
       console.error(`[db] cannot prepare database (${err.code || err.message}) — retrying in ${retryMs / 1000}s`);
-      await new Promise((r) => setTimeout(r, retryMs).unref?.());
+      await new Promise((r) => setTimeout(r, retryMs));
     }
   }
   payments.startSweeper();

@@ -2,6 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 // Load `.env` from the repo root first, then allow `backend/.env` to override.
 // Real environment variables (e.g. set in the Hostinger panel) always win.
@@ -54,12 +55,32 @@ const config = {
   },
 };
 
+const runtime = require('../runtime');
+
+// A missing secret must never take the whole site down. In production we derive
+// a stable secret from the (secret) database password so sessions survive restarts,
+// and surface a warning on /api/health so it gets fixed.
 if (!config.jwt.secret) {
-  if (config.isProd) {
-    throw new Error('JWT_SECRET must be set in production. See .env.example.');
+  if (config.isProd && config.db.password) {
+    config.jwt.secret = crypto
+      .createHash('sha256')
+      .update(`palkipay-jwt:${config.db.password}:${config.db.name}:${config.db.user}`)
+      .digest('hex');
+    runtime.warn('JWT_SECRET is not set — using a secret derived from the database password. Set JWT_SECRET in the hosting panel.');
+  } else if (config.isProd) {
+    config.jwt.secret = crypto.randomBytes(32).toString('hex');
+    runtime.warn('JWT_SECRET is not set — using a temporary secret (users are signed out on every restart). Set JWT_SECRET in the hosting panel.');
+  } else {
+    config.jwt.secret = 'palkipay-dev-only-secret-do-not-use-in-production';
   }
-  config.jwt.secret = 'palkipay-dev-only-secret-do-not-use-in-production';
-  console.warn('[config] JWT_SECRET not set — using an insecure development secret.');
+  console.warn('[config] JWT_SECRET not set — using a fallback secret.');
+}
+
+if (config.isProd && !config.appUrlExplicit) {
+  runtime.warn('APP_URL is not set — payment links use the request host. Set APP_URL=https://palkipay.ashiik.com in the hosting panel.');
+}
+if (config.isProd && !process.env.DB_PASSWORD) {
+  runtime.warn('DB_PASSWORD is not set — add the database environment variables in the hosting panel.');
 }
 
 module.exports = config;

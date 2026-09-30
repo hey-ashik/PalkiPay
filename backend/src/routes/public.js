@@ -2,6 +2,7 @@
 
 const express = require('express');
 const db = require('../db/pool');
+const runtime = require('../runtime');
 const merchants = require('../services/merchants');
 const slugs = require('../services/slugs');
 const { PROVIDERS } = require('../services/providers');
@@ -9,6 +10,11 @@ const { HttpError, publicUrl } = require('../utils');
 
 const router = express.Router();
 
+/**
+ * Health + deployment diagnostics. Always answers 200 so hosting proxies never
+ * replace the body with their own error page. Reports which settings are present
+ * (never their values).
+ */
 router.get('/health', async (_req, res) => {
   let database = 'ok';
   try {
@@ -16,10 +22,22 @@ router.get('/health', async (_req, res) => {
   } catch (err) {
     database = `error: ${err.code || err.message}`;
   }
-  res.status(database === 'ok' ? 200 : 503).json({
-    status: database === 'ok',
+  const s = runtime.state;
+  const env = Object.fromEntries(
+    ['APP_URL', 'JWT_SECRET', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'].map((k) => [k, Boolean(process.env[k])])
+  );
+  res.set('Cache-Control', 'no-store').json({
+    status: database === 'ok' && s.web === 'ready',
     service: 'palkipay',
     database,
+    migrations: s.database,
+    web: s.web,
+    web_error: s.webError,
+    warnings: s.warnings,
+    env,
+    node: process.version,
+    ports: s.ports,
+    started_at: s.startedAt,
     time: new Date().toISOString(),
   });
 });
