@@ -3,17 +3,25 @@
 PalkiPay runs as **one Node.js app**: `server.js` serves both the Express API and the Next.js
 website.
 
-**Hostinger deploys the `deploy` branch, not `main`.** Hostinger’s shared servers have a system
-library (glibc) that is too old for Next.js 16’s compiler, so the site cannot be *built* there, although
-it runs fine. Instead:
+**The site is built on GitHub, not on Hostinger.** Hostinger’s shared servers have a system
+library (glibc) that is too old for Next.js 16’s compiler, so the site cannot be *built* there,
+although it runs fine:
 
 ```
-you push to main ──► GitHub Actions builds on Ubuntu ──► pushes ready-to-run code to `deploy`
-                                                              │
-                                        Hostinger pulls `deploy` ──► npm install ──► node server.js
+you push to main ──► GitHub Actions builds on Ubuntu ──► publishes the build to the `deploy` branch
+                                                                   │
+Hostinger deploys main ──► server.js can’t compile ──► downloads the build made for this exact code
 ```
 
-The workflow is `.github/workflows/deploy.yml` (repo → **Actions** tab shows each run, ~3 min).
+Both branches work on Hostinger:
+
+- **`main`** (current setup): on start, `server.js` detects that it cannot compile, downloads the
+  prebuilt build from `deploy` whose fingerprint (`source_hash`) matches its own code, and starts.
+  If GitHub Actions is still building, it shows “PalkiPay is being prepared…” and retries every 20 s.
+  A deploy takes about 1–2 minutes.
+- **`deploy`**: already contains the build, so it starts immediately.
+
+The workflow is `.github/workflows/deploy.yml` (repo → **Actions** tab shows each run, ~1 min).
 
 ## 1. Database (already created)
 
@@ -31,14 +39,13 @@ SQL — PalkiPay creates its tables on first start.
 ## 2. Create the Node.js app from GitHub
 
 1. hPanel → **Websites → Add website → Node.js Apps** (or *Websites → Node.js* on your plan).
-2. Choose **Import Git repository** → connect GitHub → pick **`hey-ashik/PalkiPay`**, branch **`deploy`**.
-   (Already created the app from `main`? Change the branch to `deploy` in the app’s Git/deployment
-   settings and redeploy.)
+2. Choose **Import Git repository** → connect GitHub → pick **`hey-ashik/PalkiPay`**, branch
+   **`main`** (or `deploy`, see above).
 3. Build settings:
 
    | Setting | Value |
    | --- | --- |
-   | Branch | **`deploy`** |
+   | Branch | **`main`** (or `deploy`) |
    | Framework preset | **Express** (or *Other*) — not Next.js |
    | Node.js version | **22** (24 also works) |
    | Root directory | `/` (repository root) |
@@ -99,7 +106,8 @@ startup problems show up on the site itself instead of an opaque 503:
 
 | Symptom | Fix |
 | --- | --- |
-| Page says the server “cannot compile Next.js (glibc too old)” | Hostinger is deploying `main`. Switch the app’s branch to **`deploy`** and redeploy. |
+| “PalkiPay is being prepared…” for more than 5 minutes | Open the repo’s **Actions** tab: the latest “Build & publish deploy branch” run must be green. `/api/health` shows this server’s `source_hash`; `frontend/.next/SOURCE_HASH` on the `deploy` branch must match it. |
+| Page says “no prebuilt build for this version … within 20 minutes” | The Actions run failed or didn’t run — fix it (or re-run it), then restart the app. |
 | `/api/health` → `database_error` says `Access denied … (using password: YES)` on every route | The password (or user name) in the env vars doesn’t match the MySQL user. hPanel → Databases → your user → **Change password**, paste the same value into `DB_PASSWORD`, restart. |
 | Still a black LiteSpeed **503** page | The Node.js process isn’t running at all: check the entry file is `server.js`, the framework preset is **Express/Other** (not Next.js), and look at the deployment log in hPanel → Deployments. Then **Restart** the app. |
 | `/api/health` shows `database: error: ER_ACCESS_DENIED_ERROR` | Wrong `DB_USER`/`DB_PASSWORD`, or the user isn’t attached to the database in hPanel. |
