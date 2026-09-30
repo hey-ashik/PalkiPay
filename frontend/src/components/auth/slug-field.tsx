@@ -10,6 +10,8 @@ export interface SlugState {
   value: string;
   available: boolean | null;
   checking: boolean;
+  /** The availability check itself failed (e.g. the server is unavailable). */
+  failed?: boolean;
 }
 
 interface CheckResponse {
@@ -34,6 +36,7 @@ export function SlugField({
   const [host, setHost] = useState('palkipay.ashiik.com');
   const [result, setResult] = useState<CheckResponse | null>(null);
   const [checking, setChecking] = useState(false);
+  const [checkError, setCheckError] = useState<string | null>(null);
   const seq = useRef(0);
 
   useEffect(() => setHost(window.location.host), []);
@@ -47,6 +50,7 @@ export function SlugField({
     }
     const id = ++seq.current;
     setChecking(true);
+    setCheckError(null);
     onChange({ value, available: null, checking: true });
     const t = setTimeout(async () => {
       try {
@@ -54,10 +58,11 @@ export function SlugField({
         if (id !== seq.current) return;
         setResult(r);
         onChange({ value, available: r.available, checking: false });
-      } catch {
+      } catch (err) {
         if (id !== seq.current) return;
         setResult(null);
-        onChange({ value, available: null, checking: false });
+        setCheckError(err instanceof Error ? err.message : 'Could not check this URL right now.');
+        onChange({ value, available: null, checking: false, failed: true });
       } finally {
         if (id === seq.current) setChecking(false);
       }
@@ -110,7 +115,10 @@ export function SlugField({
           )}
         </div>
       )}
-      {!error && !result && !checking && (
+      {!error && !result && !checking && checkError && (
+        <p className="mt-1.5 text-[12.5px] font-medium text-amber-700">Couldn’t check availability: {checkError}</p>
+      )}
+      {!error && !result && !checking && !checkError && (
         <p className="mt-1.5 text-[12.5px] text-slate-500">
           Letters, numbers and hyphens. This becomes your permanent payment address — one per account.
         </p>

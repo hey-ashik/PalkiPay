@@ -136,6 +136,20 @@ function notFound(_req, res) {
   res.status(404).json({ status: false, message: 'Endpoint not found.' });
 }
 
+/** MySQL errors that mean "the database is not reachable / not set up", not a bug. */
+const DB_UNAVAILABLE = new Set([
+  'ER_ACCESS_DENIED_ERROR',
+  'ER_DBACCESS_DENIED_ERROR',
+  'ER_BAD_DB_ERROR',
+  'ER_NO_SUCH_TABLE',
+  'ECONNREFUSED',
+  'ETIMEDOUT',
+  'ENOTFOUND',
+  'EHOSTUNREACH',
+  'PROTOCOL_CONNECTION_LOST',
+  'ER_CON_COUNT_ERROR',
+]);
+
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, _req, res, _next) {
   if (err.type === 'entity.parse.failed') {
@@ -143,6 +157,14 @@ function errorHandler(err, _req, res, _next) {
   }
   if (err.type === 'entity.too.large') {
     return res.status(413).json({ status: false, message: 'Request body is too large.' });
+  }
+  if (DB_UNAVAILABLE.has(err.code)) {
+    console.error(`[api] database unavailable: ${err.code}`);
+    return res.status(503).json({
+      status: false,
+      code: 'DATABASE_UNAVAILABLE',
+      message: 'PalkiPay can’t reach its database right now, so this action is unavailable. Please try again in a few minutes.',
+    });
   }
   const status = err.status || 500;
   if (status >= 500) console.error('[api] unhandled error:', err);

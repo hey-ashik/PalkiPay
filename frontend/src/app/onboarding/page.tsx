@@ -52,7 +52,7 @@ export default function OnboardingPage() {
     <AuthShell title="Claim your PalkiPay URL" subtitle={<>Hi {session.user.name.split(' ')[0]}, pick the address your customers will pay you at.</>}>
       <form onSubmit={onSubmit} className="space-y-5">
         <SlugField value={slug.value} onChange={setSlug} error={error} autoFocus />
-        <Button type="submit" size="lg" className="w-full" loading={loading} disabled={slug.available !== true || slug.checking}>
+        <Button type="submit" size="lg" className="w-full" loading={loading} disabled={slug.checking || !(slug.available === true || (slug.failed === true && slug.value.trim().length >= 3))}>
           Continue to dashboard <ArrowRight className="size-4" />
         </Button>
       </form>

@@ -1,6 +1,7 @@
 import { Check, ShieldCheck } from 'lucide-react';
 import { Logo } from '@/components/brand/logo';
 import { ProviderMark } from '@/components/brand/provider-mark';
+import { ServiceStatus } from './service-status';
 
 export function AuthShell({
   title,
@@ -20,7 +21,10 @@ export function AuthShell({
         <div className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-10">
           <h1 className="text-[28px] font-bold tracking-tight text-slate-900">{title}</h1>
           <p className="mt-2 text-[14.5px] text-slate-500">{subtitle}</p>
-          <div className="mt-8">{children}</div>
+          <div className="mt-8">
+            <ServiceStatus />
+            {children}
+          </div>
           {footer && <div className="mt-8 text-center text-sm text-slate-500">{footer}</div>}
         </div>
         <p className="text-center text-xs text-slate-400">

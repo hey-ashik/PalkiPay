@@ -29,7 +29,12 @@ export default function RegisterPage() {
     setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const canSubmit =
-    form.name.trim().length >= 2 && form.email && passwordValid(form.password) && slug.available === true && !slug.checking;
+    form.name.trim().length >= 2 &&
+    form.email &&
+    passwordValid(form.password) &&
+    !slug.checking &&
+    // If the live check itself failed, still let the server decide (it re-checks the URL).
+    (slug.available === true || (slug.failed === true && slug.value.trim().length >= 3));
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

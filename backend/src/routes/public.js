@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const config = require('../config');
 const db = require('../db/pool');
 const runtime = require('../runtime');
 const merchants = require('../services/merchants');
@@ -33,6 +34,8 @@ router.get('/health', async (_req, res) => {
     built_at: s.builtAt || null,
     source_hash: s.sourceHash || null,
     database,
+    // Not secret, and the quickest way to spot a typo in the hosting panel. The password is never shown.
+    database_config: { host: config.db.host, port: config.db.port, name: config.db.name, user: config.db.user },
     database_via: s.databaseVia || null,
     database_error: database === 'ok' ? null : s.databaseError,
     migrations: s.database,
