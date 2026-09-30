@@ -28,18 +28,35 @@ function walk(dir, root, out) {
   }
 }
 
+/**
+ * Installed dependency versions from the lockfile. Only name@version counts: hosts
+ * that run `npm install` (not `npm ci`) may rewrite lockfile metadata — e.g. npm 10
+ * drops the "libc" fields npm 11 writes — without changing any version.
+ */
+function dependencySignature(root) {
+  const file = path.join(root, 'package-lock.json');
+  if (!fs.existsSync(file)) return '';
+  const lock = JSON.parse(fs.readFileSync(file, 'utf8'));
+  return Object.entries(lock.packages || {})
+    .filter(([key]) => key !== '')
+    .map(([key, meta]) => `${key}@${meta.version || meta.resolved || ''}`)
+    .sort()
+    .join('\n');
+}
+
+/** "<frontend sources>-<dependencies>" — two parts so a mismatch shows which side differs. */
 function frontendSourceHash(root = path.resolve(__dirname, '..')) {
   const files = [];
   walk(path.join(root, 'frontend'), root, files);
-  if (fs.existsSync(path.join(root, 'package-lock.json'))) files.push('package-lock.json');
   files.sort();
-  const hash = crypto.createHash('sha256');
+  const sources = crypto.createHash('sha256');
   for (const file of files) {
     // Normalise line endings so Windows and Linux checkouts agree.
     const content = fs.readFileSync(path.join(root, file)).toString('latin1').replace(/\r\n/g, '\n');
-    hash.update(`${file}\0${content}\0`);
+    sources.update(`${file}\0${content}\0`);
   }
-  return hash.digest('hex').slice(0, 16);
+  const deps = crypto.createHash('sha256').update(dependencySignature(root));
+  return `${sources.digest('hex').slice(0, 10)}-${deps.digest('hex').slice(0, 8)}`;
 }
 
 module.exports = { frontendSourceHash };
