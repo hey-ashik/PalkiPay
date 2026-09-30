@@ -29,6 +29,8 @@ router.get('/health', async (_req, res) => {
   res.set('Cache-Control', 'no-store').json({
     status: database === 'ok' && s.web === 'ready',
     service: 'palkipay',
+    version: s.version || 'source',
+    built_at: s.builtAt || null,
     database,
     database_via: s.databaseVia || null,
     database_error: database === 'ok' ? null : s.databaseError,

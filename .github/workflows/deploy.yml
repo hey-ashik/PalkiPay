@@ -1,0 +1,56 @@
+# Builds PalkiPay on GitHub's Ubuntu runners and publishes a ready-to-run copy
+# (source + prebuilt Next.js) to the `deploy` branch. Hostinger deploys that branch.
+#
+# Why: Hostinger's shared servers have a glibc too old for Next.js' native
+# compiler, so `next build` cannot run there — but the built site runs fine.
+
+name: Build & publish deploy branch
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Assemble deploy tree
+        run: node scripts/prepare-deploy.js deploy-out
+
+      - name: Publish to the deploy branch
+        working-directory: deploy-out
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git init -q -b deploy
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "deploy: ${GITHUB_SHA::7} (built from main)"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" deploy

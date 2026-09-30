@@ -1,7 +1,19 @@
 # Deploying PalkiPay on Hostinger (Business plan · Node.js app)
 
 PalkiPay runs as **one Node.js app**: `server.js` serves both the Express API and the Next.js
-website. Hostinger pulls it from GitHub, builds it and restarts it on every push to `main`.
+website.
+
+**Hostinger deploys the `deploy` branch, not `main`.** Hostinger’s shared servers have a system
+library (glibc) that is too old for Next.js 16’s compiler, so the site cannot be *built* there, although
+it runs fine. Instead:
+
+```
+you push to main ──► GitHub Actions builds on Ubuntu ──► pushes ready-to-run code to `deploy`
+                                                              │
+                                        Hostinger pulls `deploy` ──► npm install ──► node server.js
+```
+
+The workflow is `.github/workflows/deploy.yml` (repo → **Actions** tab shows each run, ~3 min).
 
 ## 1. Database (already created)
 
@@ -19,16 +31,19 @@ SQL — PalkiPay creates its tables on first start.
 ## 2. Create the Node.js app from GitHub
 
 1. hPanel → **Websites → Add website → Node.js Apps** (or *Websites → Node.js* on your plan).
-2. Choose **Import Git repository** → connect GitHub → pick **`hey-ashik/PalkiPay`**, branch **`main`**.
+2. Choose **Import Git repository** → connect GitHub → pick **`hey-ashik/PalkiPay`**, branch **`deploy`**.
+   (Already created the app from `main`? Change the branch to `deploy` in the app’s Git/deployment
+   settings and redeploy.)
 3. Build settings:
 
    | Setting | Value |
    | --- | --- |
-   | Framework preset | **Express** (or *Other*) |
+   | Branch | **`deploy`** |
+   | Framework preset | **Express** (or *Other*) — not Next.js |
    | Node.js version | **22** (24 also works) |
    | Root directory | `/` (repository root) |
    | Install command | default (`npm install`) |
-   | Build command | `npm run build` |
+   | Build command | `npm run build` (on `deploy` this only checks the prebuilt site) or leave empty |
    | Entry file | `server.js` |
    | Start command (if asked) | `npm start` |
    | Output directory | leave empty |
@@ -66,7 +81,8 @@ Leave `TELEGRAM_MODE` unset — with an `https://` APP_URL PalkiPay uses Telegra
 3. Open **https://palkipay.ashiik.com**, register, and claim your slug.
 
 From now on every `git push` to `main` (including the automatic pushes from `npm run autopush`
-or the Claude Code hook) redeploys the site.
+or the Claude Code hook) runs the GitHub Actions build, which updates `deploy`, which redeploys the site.
+`/api/health` shows the live `version` (the short commit of `main` it was built from).
 
 ## Troubleshooting
 
@@ -83,6 +99,8 @@ startup problems show up on the site itself instead of an opaque 503:
 
 | Symptom | Fix |
 | --- | --- |
+| Page says the server “cannot compile Next.js (glibc too old)” | Hostinger is deploying `main`. Switch the app’s branch to **`deploy`** and redeploy. |
+| `/api/health` → `database_error` says `Access denied … (using password: YES)` on every route | The password (or user name) in the env vars doesn’t match the MySQL user. hPanel → Databases → your user → **Change password**, paste the same value into `DB_PASSWORD`, restart. |
 | Still a black LiteSpeed **503** page | The Node.js process isn’t running at all: check the entry file is `server.js`, the framework preset is **Express/Other** (not Next.js), and look at the deployment log in hPanel → Deployments. Then **Restart** the app. |
 | `/api/health` shows `database: error: ER_ACCESS_DENIED_ERROR` | Wrong `DB_USER`/`DB_PASSWORD`, or the user isn’t attached to the database in hPanel. |
 | `database: error: ECONNREFUSED` | Use `DB_HOST=127.0.0.1` (not `localhost`, which can resolve to IPv6 `::1`). |

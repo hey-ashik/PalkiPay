@@ -27,5 +27,6 @@ Thumbs.db
 
 # Local tooling
 .local-db/
+deploy-out/
 .claude/settings.local.json
 coverage/

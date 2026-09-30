@@ -51,6 +51,13 @@ process.on('uncaughtException', (err) => log('[process] uncaught exception:', er
 
 // ── Status shared with /api/health ──────────────────────────────────────────
 const runtime = require('./backend/src/runtime');
+try {
+  // Written by scripts/prepare-deploy.js on the deploy branch.
+  const info = JSON.parse(fs.readFileSync(path.join(ROOT, 'DEPLOY_INFO.json'), 'utf8'));
+  runtime.set({ version: info.commit, builtAt: info.built_at });
+} catch {
+  runtime.set({ version: 'source' });
+}
 
 // ── Backend (loaded defensively so a failure is reported, not fatal) ────────
 let config = { port: Number(process.env.PORT) || 3000, appUrl: process.env.APP_URL || '' };
@@ -139,7 +146,11 @@ function runBuild() {
       } catch {
         // ignore
       }
-      reject(new Error(`next build exited with code ${code}\n${tail}`));
+      const hint = /GLIBC|Failed to load SWC/i.test(tail)
+        ? 'This server cannot compile Next.js (its system glibc is too old). Deploy the prebuilt `deploy` branch ' +
+          'instead of `main` — GitHub Actions builds it on every push (see docs/DEPLOYMENT.md).\n\n'
+        : '';
+      reject(new Error(`${hint}next build exited with code ${code}\n${tail}`));
     });
   });
 }
