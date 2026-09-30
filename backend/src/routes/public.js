@@ -35,7 +35,15 @@ router.get('/health', async (_req, res) => {
     source_hash: s.sourceHash || null,
     database,
     // Not secret, and the quickest way to spot a typo in the hosting panel. The password is never shown.
-    database_config: { host: config.db.host, port: config.db.port, name: config.db.name, user: config.db.user },
+    database_config: {
+      host: config.db.host,
+      port: config.db.port,
+      name: config.db.name,
+      user: config.db.user,
+      // Only while the database is failing: length of the password in use, to tell a
+      // mistyped panel value apart from a wrong MySQL password. The value is never shown.
+      ...(database === 'ok' ? {} : { password_length: config.db.passwordShape.length }),
+    },
     database_via: s.databaseVia || null,
     database_error: database === 'ok' ? null : s.databaseError,
     migrations: s.database,

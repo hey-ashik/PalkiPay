@@ -15,16 +15,30 @@ for (const file of [backendEnv, rootEnv]) {
 
 const env = process.env.NODE_ENV || 'development';
 /**
- * Values pasted into a hosting panel sometimes carry stray spaces or quotes
- * ("secret"), which dotenv would strip from a .env file — strip them here too.
+ * Values pasted into a hosting panel often carry stray spaces, quotes ("secret"),
+ * or the whole `KEY=value` line pasted into the value box. dotenv would handle
+ * the first two in a .env file — handle all three here, and remember what was
+ * fixed so /api/health can report it (never the value itself).
  */
-function clean(value) {
-  if (value == null) return undefined;
-  const v = String(value).trim();
-  const quoted = v.length >= 2 && (v[0] === '"' || v[0] === "'") && v[v.length - 1] === v[0];
-  return quoted ? v.slice(1, -1) : v;
+const envFixes = {};
+function read(key) {
+  const raw = process.env[key];
+  if (raw == null) return undefined;
+  let v = String(raw);
+  const fixes = [];
+  if (v !== v.trim()) fixes.push('surrounding whitespace');
+  v = v.trim();
+  if (v.startsWith(`${key}=`)) {
+    fixes.push(`"${key}=" prefix`);
+    v = v.slice(key.length + 1).trim();
+  }
+  if (v.length >= 2 && (v[0] === '"' || v[0] === "'") && v[v.length - 1] === v[0]) {
+    fixes.push('quotes');
+    v = v.slice(1, -1);
+  }
+  if (fixes.length) envFixes[key] = fixes;
+  return v || undefined;
 }
-const read = (key) => clean(process.env[key]) || undefined;
 
 const appUrl = (read('APP_URL') || `http://localhost:${process.env.PORT || 3000}`).replace(/\/+$/, '');
 
@@ -94,5 +108,15 @@ if (config.isProd && !config.appUrlExplicit) {
 if (config.isProd && !process.env.DB_PASSWORD) {
   runtime.warn('DB_PASSWORD is not set — add the database environment variables in the hosting panel.');
 }
+
+for (const [key, fixes] of Object.entries(envFixes)) {
+  runtime.warn(`${key} had ${fixes.join(' and ')} — fixed automatically. Tidy the value in the hosting panel.`);
+}
+
+/** Shape of the DB password (never the value) for /api/health while the database is failing. */
+config.db.passwordShape = {
+  length: config.db.password.length,
+  fixed: envFixes.DB_PASSWORD || [],
+};
 
 module.exports = config;
